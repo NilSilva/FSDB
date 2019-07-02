@@ -1,3 +1,10 @@
 <resources>
+    <!--Nomes da app e das atividades-->
     <string name="app_name">FSDB</string>
+
+    <!--Hints-->
+    <string name="hintNome">Name of movie/tv show</string>
+
+    <!--Botões-->
+    <string name="buttonProcurar">Search</string>
 </resources>
