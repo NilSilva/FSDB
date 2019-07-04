@@ -5,6 +5,9 @@
     <!--Hints-->
     <string name="hintNome">Name of movie/tv show</string>
 
+    <!--Informações-->
+    <string name="FilmesPopulares">Popular movies:</string>
+
     <!--Botões-->
     <string name="buttonProcurar">Search</string>
 </resources>

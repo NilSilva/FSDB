@@ -1,6 +1,8 @@
 package nil.s.fsdb;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,30 +13,40 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     //TODO: dar credito à fonte da base de dados
     /*==============================================================================================
         Declaração dos objetos
      =============================================================================================*/
-
     private final String TAG = "MainActivity"; //TAG para os logs
 
-    private ProgressBar progressBar;
+    private RecyclerView recyclerViewFilme;
 
-    private EditText editText;
+    private AdaptadorFilme adaptadorFilme;
 
-    private TextView textView;
+    private ArrayList<ItemFilme> itemFilmesList;
 
-    private Button button;
+    private RequestQueue requestQueue;
 
-    private final String API_URL_INICIO = "http://www.omdbapi.com/?t=";
-    private final String API_URL_FIM = "&apikey=f68d82ec";
-
+    private int page = 1;
+    private int npage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,65 +56,57 @@ public class MainActivity extends AppCompatActivity {
         /*==========================================================================================
             Criação dos objetos
          =========================================================================================*/
-        progressBar = findViewById(R.id.progressBar);
+        recyclerViewFilme = findViewById(R.id.recyclerViewMainActivity);
+        recyclerViewFilme.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        //linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerViewFilme.setLayoutManager(linearLayoutManager);
 
-        editText = findViewById(R.id.editTextNome);
+        itemFilmesList = new ArrayList<>();
 
-        textView = findViewById(R.id.textViewResposta);
-
-        button = findViewById(R.id.buttonProcurar);
-
-        //fazer com que o butão fassa algo
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new RecolherDados().execute();
-            }
-        });
+        requestQueue = Volley.newRequestQueue(this);
+        parseJSON();
     }
 
-    class RecolherDados extends AsyncTask<Void, Void, String>{
-        private Exception exception;
+    private void parseJSON() {
 
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-            textView.setText("");
-        }
+        String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=c816441df0108db98214080d85446617";
 
-        protected String doInBackground(Void... urls) {
-            String nome = editText.getText().toString().trim();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("results");
 
-            try{
-                URL url = new URL("https://api.themoviedb.org/3/search/movie?api_key=c816441df0108db98214080d85446617&query=" + nome);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                            for(int i = 0;i < jsonArray.length();i++){
+                                JSONObject result = jsonArray.getJSONObject(i);
 
-                try{
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while((line = bufferedReader.readLine()) != null){
-                        stringBuilder.append(line).append("\n");
+                                String nome = result.getString("title");
+                                String image = result.getString("poster_path");
+                                String data = result.getString("release_date");
+                                itemFilmesList.add(new ItemFilme(nome, image, data));
+                            }
+
+                            adaptadorFilme = new AdaptadorFilme(MainActivity.this, itemFilmesList);
+                            recyclerViewFilme.setAdapter(adaptadorFilme);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    bufferedReader.close();
-                    return stringBuilder.toString();
-                }finally {
-                    urlConnection.disconnect();
-                }
-            }catch (Exception e){
-                Log.e(TAG, e.getMessage(), e);
+                }, new Response.ErrorListener() {
+            /**
+             * Callback method that an error has been occurred with the provided error code and optional
+             * user-readable message.
+             *
+             * @param error
+             */
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
             }
+        });
 
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String res) {
-            if(res == null){
-                res = "There was an error";
-            }
-            progressBar.setVisibility(View.GONE);
-            Log.i(TAG, res);
-            textView.setText(res);
-        }
+        requestQueue.add(request);
     }
 }
