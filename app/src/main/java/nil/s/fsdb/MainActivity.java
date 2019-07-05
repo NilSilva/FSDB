@@ -31,7 +31,11 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    //TODO: dar credito à fonte da base de dados
+
+    /*
+        TODO: dar credito à fonte da base de dados
+     */
+
     /*==============================================================================================
         Declaração dos objetos
      =============================================================================================*/

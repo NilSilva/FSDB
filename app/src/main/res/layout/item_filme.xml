@@ -5,39 +5,43 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:orientation="vertical"
-    app:cardCornerRadius="10dp">
+    app:cardCornerRadius="10dp"
+    android:id="@+id/cardView">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/imageViewItemFilme"
             android:layout_width="100dp"
             android:layout_height="150dp"
-            android:layout_gravity="center"
             android:src="@mipmap/ic_launcher" />
 
-        <TextView
-            android:id="@+id/textViewItemFilmeNome"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Nome do Filme"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" />
+            android:gravity="end"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/textViewItemFilmeData"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="##/##/####"
-            android:textColor="@android:color/black"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/textViewItemFilmeNome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nome do Filme"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/textViewItemFilmeData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="##/##/####"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
