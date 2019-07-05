@@ -1,17 +1,16 @@
 package nil.s.fsdb;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.MenuItem;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,98 +18,69 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     /*
         TODO: dar credito à fonte da base de dados
      */
 
-    /*==============================================================================================
-        Declaração dos objetos
-     =============================================================================================*/
-    private final String TAG = "MainActivity"; //TAG para os logs
-
-    private RecyclerView recyclerViewFilme;
-
-    private AdaptadorFilme adaptadorFilme;
-
-    private ArrayList<ItemFilme> itemFilmesList;
-
-    private RequestQueue requestQueue;
-
-    private int page = 1;
-    private int npage;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*==========================================================================================
-            Criação dos objetos
-         =========================================================================================*/
-        recyclerViewFilme = findViewById(R.id.recyclerViewMainActivity);
-        recyclerViewFilme.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        //linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        recyclerViewFilme.setLayoutManager(linearLayoutManager);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        itemFilmesList = new ArrayList<>();
+        drawer = findViewById(R.id.drawer_layout);
 
-        requestQueue = Volley.newRequestQueue(this);
-        parseJSON();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
+        navigationView.setCheckedItem(R.id.action_home);
     }
 
-    private void parseJSON() {
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
-        String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=c816441df0108db98214080d85446617";
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("results");
+        switch (menuItem.getItemId()){
 
-                            for(int i = 0;i < jsonArray.length();i++){
-                                JSONObject result = jsonArray.getJSONObject(i);
+            case R.id.action_home:
 
-                                String nome = result.getString("title");
-                                String image = result.getString("poster_path");
-                                String data = result.getString("release_date");
-                                itemFilmesList.add(new ItemFilme(nome, image, data));
-                            }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
+                break;
+            case R.id.action_filmes:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FilmesFragment()).commit();
 
-                            adaptadorFilme = new AdaptadorFilme(MainActivity.this, itemFilmesList);
-                            recyclerViewFilme.setAdapter(adaptadorFilme);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            /**
-             * Callback method that an error has been occurred with the provided error code and optional
-             * user-readable message.
-             *
-             * @param error
-             */
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
+                break;
+        }
 
-        requestQueue.add(request);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
