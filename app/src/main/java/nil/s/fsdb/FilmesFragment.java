@@ -1,5 +1,6 @@
 package nil.s.fsdb;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Spannable;
@@ -22,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,12 +32,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class FilmesFragment extends Fragment {
+public class FilmesFragment extends Fragment implements AdaptadorFilme.OnItemClickListener {
 
     /*==============================================================================================
         Declaração dos objetos
      =============================================================================================*/
-    private final String TAG = "MainActivity"; //TAG para os logs
+    private final String TAG = "FilmesFragment"; //TAG para os logs
 
     private RecyclerView recyclerViewFilme;
 
@@ -47,11 +49,13 @@ public class FilmesFragment extends Fragment {
 
     private EditText editText;
 
+    private View rootView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.filmes_fragment, container, false);
+        rootView = inflater.inflate(R.layout.filmes_fragment, container, false);
         /*==========================================================================================
             Criação dos objetos
          =========================================================================================*/
@@ -129,6 +133,7 @@ public class FilmesFragment extends Fragment {
         @Override
         public void afterTextChanged(Editable s) {
 
+            //parseJSON();
         }
     };
 
@@ -138,11 +143,13 @@ public class FilmesFragment extends Fragment {
         String language = Locale.getDefault().getLanguage() + "-" + Locale.getDefault().getLanguage().toUpperCase();
         Log.d(TAG, "lang - " + language);
 
-        String url = "https://api.themoviedb.org/3/movie/popular?api_key=c816441df0108db98214080d85446617&region=PT&language=" + language;
+        String url = "https://api.themoviedb.org/3/movie/popular?api_key=" + ChaveAPI.TMDb + "&region=PT&language=" + language;
 
         if(!editText.getText().toString().isEmpty()){
-            url = "https://api.themoviedb.org/3/search/movie?api_key=c816441df0108db98214080d85446617&query=" + editText.getText().toString().trim();
+            url = "https://api.themoviedb.org/3/search/movie?api_key=" + ChaveAPI.TMDb + "&query=" + editText.getText().toString().trim();
         }
+
+        Log.d(TAG, "url - " + url);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -154,14 +161,16 @@ public class FilmesFragment extends Fragment {
                             for(int i = 0;i < jsonArray.length();i++){
                                 JSONObject result = jsonArray.getJSONObject(i);
 
+                                String id = result.getString("id");
                                 String nome = result.getString("title");
                                 String image = result.getString("poster_path");
                                 String data = result.getString("release_date");
-                                itemFilmesList.add(new ItemFilme(nome, image, data));
+                                itemFilmesList.add(new ItemFilme(id, nome, image, data));
                             }
 
                             adaptadorFilme = new AdaptadorFilme(getActivity(), itemFilmesList);
                             recyclerViewFilme.setAdapter(adaptadorFilme);
+                            adaptadorFilme.setOnItemClickListener(FilmesFragment.this);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -180,5 +189,15 @@ public class FilmesFragment extends Fragment {
         });
 
         requestQueue.add(request);
+    }
+
+    public void onItemClick(int position) {
+
+        Intent intent = new Intent(getActivity(), DetalhesFilmesActivity.class);
+        ItemFilme clickedItem = itemFilmesList.get(position);
+
+        intent.putExtra("id", clickedItem.getId());
+
+        startActivity(intent);
     }
 }

@@ -1,6 +1,7 @@
 package nil.s.fsdb;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,12 +29,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements AdaptadorFilme.OnItemClickListener {
 
     /*==============================================================================================
         Declaração dos objetos
      =============================================================================================*/
-    private final String TAG = "MainActivity"; //TAG para os logs
+    private final String TAG = "MainFragment"; //TAG para os logs
 
     private RecyclerView recyclerViewFilme;
 
@@ -42,6 +43,8 @@ public class MainFragment extends Fragment {
     private ArrayList<ItemFilme> itemFilmesList;
 
     private RequestQueue requestQueue;
+
+    private int id;
 
     @Nullable
     @Override
@@ -70,7 +73,7 @@ public class MainFragment extends Fragment {
         String language = Locale.getDefault().getLanguage() + "-" + Locale.getDefault().getLanguage().toUpperCase();
         Log.d(TAG, "lang - " + language);
         
-        String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=c816441df0108db98214080d85446617&region=PT&language=" + language;
+        String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=" + ChaveAPI.TMDb + "&region=PT&language=" + language;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -82,14 +85,16 @@ public class MainFragment extends Fragment {
                             for(int i = 0;i < jsonArray.length();i++){
                                 JSONObject result = jsonArray.getJSONObject(i);
 
+                                String id = result.getString("id");
                                 String nome = result.getString("title");
                                 String image = result.getString("poster_path");
                                 String data = result.getString("release_date");
-                                itemFilmesList.add(new ItemFilme(nome, image, data));
+                                itemFilmesList.add(new ItemFilme(id, nome, image, data));
                             }
 
                             adaptadorFilme = new AdaptadorFilme(getActivity(), itemFilmesList);
                             recyclerViewFilme.setAdapter(adaptadorFilme);
+                            adaptadorFilme.setOnItemClickListener(MainFragment.this);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -108,5 +113,15 @@ public class MainFragment extends Fragment {
         });
 
         requestQueue.add(request);
+    }
+
+    public void onItemClick(int position) {
+
+        Intent intent = new Intent(getActivity(), DetalhesFilmesActivity.class);
+        ItemFilme clickedItem = itemFilmesList.get(position);
+
+        intent.putExtra("id", clickedItem.getId());
+
+        startActivity(intent);
     }
 }

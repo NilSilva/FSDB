@@ -1,6 +1,8 @@
 package nil.s.fsdb;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +19,20 @@ import java.util.ArrayList;
 
 public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeViewHolder> {
 
+    private String TAG = "AdaptadorFilme";
+
     private Context context;
 
     private ArrayList<ItemFilme> itemList;
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
 
     public  AdaptadorFilme(Context context, ArrayList<ItemFilme> itemList){
 
@@ -98,7 +111,7 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
         return itemList.size();
     }
 
-    public class FilmeViewHolder extends RecyclerView.ViewHolder{
+    public class FilmeViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView imageView;
 
@@ -112,6 +125,17 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
 
             textViewNome = itemView.findViewById(R.id.textViewItemFilmeNome);
             textViewData = itemView.findViewById(R.id.textViewItemFilmeData);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            mListener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

@@ -7,6 +7,8 @@
 
     <!--Informações-->
     <string name="FilmesPopulares">Popular movies:</string>
+    <string name="FilmesEstreias">Upcoming movies:</string>
+    <string name="Overview">Overview:</string>
 
     <!--Botões-->
     <string name="buttonProcurar">Search</string>
