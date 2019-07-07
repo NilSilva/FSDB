@@ -62,10 +62,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewDetalhesFilmesOverviewHint" />
 
-        <VideoView
+        <com.google.android.youtube.player.YouTubePlayerView
             android:id="@+id/videoViewDetalhesFilmeTrailer"
             android:layout_width="match_parent"
-            android:layout_height="205dp"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/textViewDetalhesFilmesOverview"
             android:layout_margin="10dp"/>
 

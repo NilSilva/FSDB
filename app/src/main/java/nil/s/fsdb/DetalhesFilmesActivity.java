@@ -22,6 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -43,7 +47,7 @@ import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-public class DetalhesFilmesActivity extends AppCompatActivity {
+public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
 
     private String TAG = "DetalhesFilmesActivity";
 
@@ -59,7 +63,7 @@ public class DetalhesFilmesActivity extends AppCompatActivity {
 
     private ItemFilme itemFilme;
 
-    private VideoView videoViewTrailer;
+    private YouTubePlayerView youTubeView;
 
     private String key = "No Video";
 
@@ -79,7 +83,7 @@ public class DetalhesFilmesActivity extends AppCompatActivity {
         textViewNome = findViewById(R.id.textViewDetalhesFilmesNome);
         textViewOverview = findViewById(R.id.textViewDetalhesFilmesOverview);
 
-        videoViewTrailer = findViewById(R.id.videoViewDetalhesFilmeTrailer);
+        youTubeView = findViewById(R.id.videoViewDetalhesFilmeTrailer);
 
         parseJSON();
     }
@@ -151,7 +155,7 @@ public class DetalhesFilmesActivity extends AppCompatActivity {
         String posterURL = filme.getPoster_path();
         String nome = filme.getTitle();
         String overview = filme.getOverview();
-        key = "https://www.youtube.com/watch?v=" + filme.getKey();
+        key = filme.getKey();
 
         Log.d(TAG, "nome - " + nome);
         Log.d(TAG, "poster - " + posterURL);
@@ -163,5 +167,19 @@ public class DetalhesFilmesActivity extends AppCompatActivity {
 
         textViewNome.setText(nome);
         textViewOverview.setText(overview);
+
+        youTubeView.initialize(ChaveAPI.youtube, this);
+    }
+
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
+        if (!wasRestored) {
+            player.cueVideo(key); // your video to play
+            Log.d("Youtube -->", "Success - " + key);
+        }
+    }
+    @Override
+    public void onInitializationFailure(YouTubePlayer.Provider arg0, YouTubeInitializationResult arg1){
+        Log.d("Youtube -->", "Failure");
     }
 }
