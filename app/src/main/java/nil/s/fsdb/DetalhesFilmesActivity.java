@@ -1,20 +1,10 @@
 package nil.s.fsdb;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,21 +21,8 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Locale;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
 
@@ -116,15 +93,38 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
                             Log.d(TAG, "video key - " + key);
 
+                            String bud = response.getString("budget");
+                            int budget;
+                            String rev = response.getString("revenue");
+                            int revenue;
+                            String run = response.getString("runtime");
+                            int runtime;
+
+                            try {
+                                budget = Integer.parseInt(bud);
+                            }catch (Exception e){
+                                budget = -1;
+                            }
+                            try {
+                                revenue = Integer.parseInt(rev);
+                            }catch (Exception e){
+                                revenue = -1;
+                            }
+                            try {
+                                runtime = Integer.parseInt(run);
+                            }catch (Exception e){
+                                runtime = -1;
+                            }
+
                             itemFilme = new ItemFilme(
                                     response.getString("title"),
                                     response.getString("poster_path"),
                                     response.getString("backdrop_path"),
                                     response.getString("release_date"),
-                                    response.getInt("budget"),
-                                    response.getInt("revenue"),
+                                    budget,
+                                    revenue,
                                     response.getString("overview"),
-                                    response.getInt("runtime"),
+                                    runtime,
                                     key
                             );
 
@@ -151,6 +151,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     }
 
     private void Campos(ItemFilme filme){
+
         String backURL = filme.getBackdrop_path();
         String posterURL = filme.getPoster_path();
         String nome = filme.getTitle();
@@ -168,13 +169,22 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewNome.setText(nome);
         textViewOverview.setText(overview);
 
+        textViewNome.measure(0, 0);       //must call measure!
+        int Px = textViewNome.getMeasuredWidth();
+        int maxPx = (int)(220 * getResources().getDisplayMetrics().density);
+        if(Px > maxPx){
+            textViewNome.setWidth(maxPx);
+        }
+        Log.d(TAG, "width - " + Px);
+        Log.d(TAG, "widthMax - " + maxPx);
+
         youTubeView.initialize(ChaveAPI.youtube, this);
     }
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean wasRestored) {
         if (!wasRestored) {
-            player.cueVideo(key); // your video to play
+            player.cueVideo(key);
             Log.d("Youtube -->", "Success - " + key);
         }
     }
