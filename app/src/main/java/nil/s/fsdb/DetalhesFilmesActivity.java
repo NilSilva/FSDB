@@ -16,6 +16,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
+import com.r0adkll.slidr.Slidr;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -48,6 +49,8 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_filmes);
+
+        Slidr.attach(this);
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");

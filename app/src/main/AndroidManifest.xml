@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".DetalhesFilmesActivity"></activity>
+        <activity
+            android:name=".DetalhesFilmesActivity"
+            android:theme="@style/AppTheme.slidrActivityTheme" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

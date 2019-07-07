@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#062947"
-    tools:context=".DetalhesFilmesActivity"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    tools:context=".DetalhesFilmesActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -33,35 +33,35 @@
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="10dp"
             app:cardBackgroundColor="#062947"
-            app:layout_constraintBottom_toBottomOf="@id/imageViewDetalhesFilmesBackground"
-            app:layout_constraintEnd_toEndOf="parent"
             app:cardCornerRadius="10dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp">
+            app:layout_constraintBottom_toBottomOf="@id/imageViewDetalhesFilmesBackground"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
                 android:id="@+id/textViewDetalhesFilmesNome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="5dp"
                 android:textColor="@android:color/white"
-                tools:text="Teste"
                 android:textSize="20sp"
-                android:layout_margin="5dp"/>
+                tools:text="Teste" />
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewDetalhesFilmeOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:id="@+id/cardViewDetalhesFilmeOverview"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_margin="10dp"
+            android:padding="10dp"
             app:cardBackgroundColor="#0091EA"
             app:cardCornerRadius="10dp"
-            android:padding="10dp"
-            android:layout_margin="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageViewDetalhesFilmesPoster">
 
             <LinearLayout
@@ -73,10 +73,10 @@
                     android:id="@+id/textViewDetalhesFilmesOverviewHint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="15sp"
                     android:layout_margin="8dp"
                     android:text="@string/Overview"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@android:color/white"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/textViewDetalhesFilmesOverview"
