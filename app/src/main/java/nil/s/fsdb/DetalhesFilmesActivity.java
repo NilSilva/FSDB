@@ -36,6 +36,9 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     
     private TextView textViewNome;
     private TextView textViewOverview;
+    private TextView textViewData;
+    private TextView textViewRevenue;
+    private TextView textViewRuntime;
     
     private RequestQueue requestQueue;
 
@@ -62,6 +65,9 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
         textViewNome = findViewById(R.id.textViewDetalhesFilmesNome);
         textViewOverview = findViewById(R.id.textViewDetalhesFilmesOverview);
+        textViewData = findViewById(R.id.textViewDetalhesFilmesData);
+        textViewRevenue = findViewById(R.id.textViewDetalhesFilmesRevenue);
+        textViewRuntime = findViewById(R.id.textViewDetalhesFilmesRuntime);
 
         youTubeView = findViewById(R.id.videoViewDetalhesFilmeTrailer);
 
@@ -99,7 +105,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                             String bud = response.getString("budget");
                             int budget;
                             String rev = response.getString("revenue");
-                            int revenue;
+                            long revenue;
                             String run = response.getString("runtime");
                             int runtime;
 
@@ -165,12 +171,20 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         Log.d(TAG, "poster - " + posterURL);
         Log.d(TAG, "back - " + backURL);
         Log.d(TAG, "video url - " + key);
+        Log.d(TAG, "Campos: data - " + filme.getRelease_date());
+        Log.d(TAG, "Campos: revenue - " + filme.getRevenue());
+        Log.d(TAG, "Campos: budget - " + filme.getBudget());
+        Log.d(TAG, "Campos: runtime - " + filme.getRuntime());
 
         Picasso.get().load(backURL).into(imageViewBackground);
         Picasso.get().load(posterURL).into(imageViewPoster);
 
         textViewNome.setText(nome);
         textViewOverview.setText(overview);
+        textViewData.setText(filme.getRelease_date());
+        long lucro = filme.getRevenue() - filme.getBudget();
+        textViewRevenue.setText(String.valueOf(filme.getRevenue()) + "/" + String.valueOf(filme.getBudget()) + "(" + String.valueOf(lucro) + ")");
+        textViewRuntime.setText(String.valueOf(filme.getRuntime()));
 
         textViewNome.measure(0, 0);       //must call measure!
         int Px = textViewNome.getMeasuredWidth();

@@ -8,7 +8,7 @@ public class ItemFilme {
     private String backdrop_path;
     private String release_date;
     private int budget;
-    private int revenue;
+    private long revenue;
     private String overview;
     private int runtime;
     private String key;
@@ -28,7 +28,7 @@ public class ItemFilme {
         this.release_date = release_date;
     }
 
-    public ItemFilme(String title, String poster_path, String backdrop_path, String release_date, int budget, int revenue, String overview, int runtime, String key){
+    public ItemFilme(String title, String poster_path, String backdrop_path, String release_date, int budget, long revenue, String overview, int runtime, String key){
         this.id = id;
         this.title = title;
         this.poster_path = "https://image.tmdb.org/t/p/original/" + poster_path;
@@ -65,7 +65,7 @@ public class ItemFilme {
         return budget;
     }
 
-    public int getRevenue() {
+    public long getRevenue() {
         return revenue;
     }
 
