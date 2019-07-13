@@ -98,7 +98,7 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
 
         holder.textViewNome.setText(nome);
         holder.textViewData.setText(data);
-        Picasso.get().load(imageUrl).into(holder.imageView);
+        Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView);
     }
 
     /**

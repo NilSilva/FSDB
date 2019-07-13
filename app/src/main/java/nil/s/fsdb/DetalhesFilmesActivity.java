@@ -5,6 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,15 +21,17 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
-public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
+public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener, AdaptadorPessoas.OnItemClickListenerP {
 
     private String TAG = "DetalhesFilmesActivity";
 
@@ -48,12 +54,16 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
     private String key = "No Video";
 
+    private RecyclerView recyclerViewPessoas;
+
+    private AdaptadorPessoas adaptadorPessoas;
+
+    private ArrayList<ItemFilmePessoas> itemPessoasList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_filmes);
-
-        Slidr.attach(this);
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
@@ -68,18 +78,85 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewData = findViewById(R.id.textViewDetalhesFilmesData);
         textViewRevenue = findViewById(R.id.textViewDetalhesFilmesRevenue);
         textViewRuntime = findViewById(R.id.textViewDetalhesFilmesRuntime);
+        recyclerViewPessoas = findViewById(R.id.recyclerViewDetalhesFilme);
 
         youTubeView = findViewById(R.id.videoViewDetalhesFilmeTrailer);
 
         parseJSON();
+
+        recyclerViewPessoas.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerViewPessoas.setLayoutManager(linearLayoutManager);
+
+        itemPessoasList = new ArrayList<>();
+
+        buscarPessoas();
     }
 
-    private void parseJSON() {
+    private void buscarPessoas() {
+        itemPessoasList.clear();
 
         String language = Locale.getDefault().getLanguage() + "-" + Locale.getDefault().getLanguage().toUpperCase();
         Log.d(TAG, "lang - " + language);
 
-        String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + ChaveAPI.TMDb + "&language=" + language + "&append_to_response=videos";
+        String url = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=" + ChaveAPI.TMDb + "&region=PT&language=" + language;
+
+        Log.d(TAG, "url credits - " + url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("cast");
+
+                            for(int i = 0;i < jsonArray.length();i++){
+                                JSONObject result = jsonArray.getJSONObject(i);
+
+                                String nome = result.getString("name");
+                                String personagem = result.getString("character");
+                                String image = result.getString("profile_path");
+                                String ID = result.getString("id");
+                                itemPessoasList.add(new ItemFilmePessoas(nome, personagem, image, ID));
+                                Log.d(TAG, "onResponse: pessoa - " + nome);
+                            }
+
+                            adaptadorPessoas = new AdaptadorPessoas(DetalhesFilmesActivity.this, itemPessoasList);
+                            recyclerViewPessoas.setAdapter(adaptadorPessoas);
+                            adaptadorPessoas.setOnItemClickListenerP(DetalhesFilmesActivity.this);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            /**
+             * Callback method that an error has been occurred with the provided error code and optional
+             * user-readable message.
+             *
+             * @param error
+             */
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        requestQueue.add(request);
+    }
+
+    public void onItemClick(int position) {
+
+        Toast.makeText(this, "ola", Toast.LENGTH_LONG).show();
+    }
+
+    private void parseJSON() {
+
+        final String iso_3166_1 = Locale.getDefault().getDisplayLanguage();
+        String language = iso_3166_1 + "-" + iso_3166_1.toUpperCase();
+        Log.d(TAG, "lang - " + language);
+
+        String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + ChaveAPI.TMDb + "&language=" + language + "&append_to_response=videos,release_dates";
         Log.d(TAG, "url - " + url);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -100,6 +177,21 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                                 }
                             }
 
+                            JSONObject release_dates = response.getJSONObject("release_dates");
+                            JSONArray RDresults = release_dates.getJSONArray("results");
+                            JSONObject info = null;
+
+                            for(int i = 0;i < RDresults.length();i++){
+                                JSONObject result = RDresults.getJSONObject(i);
+                                Log.d(TAG, "onResponse: result iso - " + result.getString("iso_3166_1"));
+
+                                if(result.getString("iso_3166_1").equals(iso_3166_1)){
+                                    //TODO:this gives an array!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                    info = result.getJSONObject("release_dates");
+                                    break;
+                                }
+                            }
+
                             Log.d(TAG, "video key - " + key);
 
                             String bud = response.getString("budget");
@@ -115,7 +207,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                                 budget = -1;
                             }
                             try {
-                                revenue = Integer.parseInt(rev);
+                                revenue = Long.parseLong(rev);
                             }catch (Exception e){
                                 revenue = -1;
                             }
@@ -136,6 +228,11 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                                     runtime,
                                     key
                             );
+                            if (info != null) {
+                                Log.d(TAG, "onResponse: data" + info.getString("release_date"));
+                            }else {
+                                Log.d(TAG, "onResponse: info = null");
+                            }
 
                             Campos(itemFilme);
 
@@ -176,24 +273,16 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         Log.d(TAG, "Campos: budget - " + filme.getBudget());
         Log.d(TAG, "Campos: runtime - " + filme.getRuntime());
 
-        Picasso.get().load(backURL).into(imageViewBackground);
-        Picasso.get().load(posterURL).into(imageViewPoster);
+        Picasso.get().load(backURL).placeholder(R.drawable.progress_animation).into(imageViewBackground);
+        Picasso.get().load(posterURL).placeholder(R.drawable.progress_animation).into(imageViewPoster);
 
         textViewNome.setText(nome);
         textViewOverview.setText(overview);
         textViewData.setText(filme.getRelease_date());
         long lucro = filme.getRevenue() - filme.getBudget();
-        textViewRevenue.setText(String.valueOf(filme.getRevenue()) + "/" + String.valueOf(filme.getBudget()) + "(" + String.valueOf(lucro) + ")");
+        String boxOffice = filme.getRevenue() + "/" + filme.getBudget() + "(" + lucro + ")";
+        textViewRevenue.setText(boxOffice);
         textViewRuntime.setText(String.valueOf(filme.getRuntime()));
-
-        textViewNome.measure(0, 0);       //must call measure!
-        int Px = textViewNome.getMeasuredWidth();
-        int maxPx = (int)(220 * getResources().getDisplayMetrics().density);
-        if(Px > maxPx){
-            textViewNome.setWidth(maxPx);
-        }
-        Log.d(TAG, "width - " + Px);
-        Log.d(TAG, "widthMax - " + maxPx);
 
         youTubeView.initialize(ChaveAPI.youtube, this);
     }

@@ -12,6 +12,7 @@ public class ItemFilme {
     private String overview;
     private int runtime;
     private String key;
+    private String certification;
 
     public ItemFilme(String title, String poster_path, String backdrop_path, String overview, String key) {
         this.title = title;
@@ -29,7 +30,6 @@ public class ItemFilme {
     }
 
     public ItemFilme(String title, String poster_path, String backdrop_path, String release_date, int budget, long revenue, String overview, int runtime, String key){
-        this.id = id;
         this.title = title;
         this.poster_path = "https://image.tmdb.org/t/p/original/" + poster_path;
         this.backdrop_path = "https://image.tmdb.org/t/p/original/" + backdrop_path;
@@ -39,6 +39,7 @@ public class ItemFilme {
         this.overview = overview;
         this.runtime = runtime;
         this.key = key;
+        this.certification = certification;
     }
 
     public String getId() {
@@ -79,5 +80,9 @@ public class ItemFilme {
 
     public String getKey() {
         return key;
+    }
+
+    public String getCertification(){
+        return certification;
     }
 }
