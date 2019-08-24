@@ -1,6 +1,5 @@
 package nil.s.fsdb;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -74,6 +72,8 @@ public class MainFragment extends Fragment implements AdaptadorFilme.OnItemClick
         Log.d(TAG, "lang - " + language);
         
         String url = "https://api.themoviedb.org/3/movie/upcoming?api_key=" + ChaveAPI.TMDb + "&region=PT&language=" + language;
+
+        Log.d(TAG, "parseJSON: url - " + url);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {

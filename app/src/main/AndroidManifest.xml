@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".DetalhesPessoasActivity"></activity>
         <activity
             android:name=".DetalhesFilmesActivity"
             android:theme="@style/AppTheme.slidrActivityTheme" />

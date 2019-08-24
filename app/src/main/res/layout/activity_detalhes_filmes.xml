@@ -195,6 +195,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewDetalhesFilmePessoas"
             android:layout_margin="8dp"
             android:padding="8dp"
             app:cardCornerRadius="10dp"
@@ -204,7 +205,23 @@
             app:layout_constraintTop_toBottomOf="@+id/cardViewDetalhesFilmeTrailer">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewDetalhesFilme"
+                android:id="@+id/recyclerViewDetalhesFilmeAtores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            app:cardCornerRadius="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#0091EA"
+            app:layout_constraintTop_toBottomOf="@+id/cardViewDetalhesFilmePessoas">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewDetalhesFilmeEquipa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

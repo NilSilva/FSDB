@@ -20,8 +20,6 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -55,10 +53,13 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     private String key = "No Video";
 
     private RecyclerView recyclerViewPessoas;
+    private RecyclerView recyclerViewEquipa;
 
     private AdaptadorPessoas adaptadorPessoas;
+    private AdaptadorPessoas adaptadorEquipa;
 
     private ArrayList<ItemFilmePessoas> itemPessoasList;
+    private ArrayList<ItemFilmePessoas> itemEquipaList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,18 +79,26 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewData = findViewById(R.id.textViewDetalhesFilmesData);
         textViewRevenue = findViewById(R.id.textViewDetalhesFilmesRevenue);
         textViewRuntime = findViewById(R.id.textViewDetalhesFilmesRuntime);
-        recyclerViewPessoas = findViewById(R.id.recyclerViewDetalhesFilme);
+
+        recyclerViewPessoas = findViewById(R.id.recyclerViewDetalhesFilmeAtores);
+        recyclerViewEquipa = findViewById(R.id.recyclerViewDetalhesFilmeEquipa);
 
         youTubeView = findViewById(R.id.videoViewDetalhesFilmeTrailer);
 
         parseJSON();
 
         recyclerViewPessoas.setHasFixedSize(true);
+        recyclerViewEquipa.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this);
+        linearLayoutManager1.setOrientation(RecyclerView.HORIZONTAL);
         recyclerViewPessoas.setLayoutManager(linearLayoutManager);
+        recyclerViewEquipa.setLayoutManager(linearLayoutManager1);
 
         itemPessoasList = new ArrayList<>();
+        itemEquipaList = new ArrayList<>();
 
         buscarPessoas();
     }
@@ -100,7 +109,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         String language = Locale.getDefault().getLanguage() + "-" + Locale.getDefault().getLanguage().toUpperCase();
         Log.d(TAG, "lang - " + language);
 
-        String url = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=" + ChaveAPI.TMDb + "&region=PT&language=" + language;
+        String url = "https://api.themoviedb.org/3/movie/" + id + "/credits?api_key=" + ChaveAPI.TMDb + "&language=" + language;
 
         Log.d(TAG, "url credits - " + url);
 
@@ -119,12 +128,29 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                                 String image = result.getString("profile_path");
                                 String ID = result.getString("id");
                                 itemPessoasList.add(new ItemFilmePessoas(nome, personagem, image, ID));
-                                Log.d(TAG, "onResponse: pessoa - " + nome);
+                                Log.d(TAG, "onResponse: cast - " + nome);
+                            }
+
+                            jsonArray = response.getJSONArray("crew");
+
+                            for(int i = 0;i < jsonArray.length();i++){
+                                JSONObject result = jsonArray.getJSONObject(i);
+
+                                String nome = result.getString("name");
+                                String job = result.getString("job");
+                                String image = result.getString("profile_path");
+                                String ID = result.getString("id");
+                                itemEquipaList.add(new ItemFilmePessoas(nome, job, image, ID));
+                                Log.d(TAG, "onResponse: crew - " + nome);
                             }
 
                             adaptadorPessoas = new AdaptadorPessoas(DetalhesFilmesActivity.this, itemPessoasList);
                             recyclerViewPessoas.setAdapter(adaptadorPessoas);
                             adaptadorPessoas.setOnItemClickListenerP(DetalhesFilmesActivity.this);
+
+                            adaptadorEquipa = new AdaptadorPessoas(DetalhesFilmesActivity.this, itemEquipaList);
+                            recyclerViewEquipa.setAdapter(adaptadorEquipa);
+                            adaptadorEquipa.setOnItemClickListenerP(DetalhesFilmesActivity.this);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
