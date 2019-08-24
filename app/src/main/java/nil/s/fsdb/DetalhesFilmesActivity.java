@@ -173,7 +173,8 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
     public void onItemClick(int position) {
 
-        Toast.makeText(this, "ola", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, DetalhesPessoasActivity.class);
+        startActivity(intent);
     }
 
     private void parseJSON() {
