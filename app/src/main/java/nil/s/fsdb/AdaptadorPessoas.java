@@ -1,6 +1,7 @@
 package nil.s.fsdb;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,20 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
     private Context context;
 
     private ArrayList<ItemFilmePessoas> itemList;
+
     private AdaptadorPessoas.OnItemClickListenerP mListener;
+
+    private RecyclerView mRecyclerView;
+
+    private boolean InUse = false;
+
+    public boolean getInUse(){
+        return InUse;
+    }
+
+    public void NotInUse(){
+        InUse = false;
+    }
 
     public interface OnItemClickListenerP {
         void onItemClick(int position);
@@ -38,8 +52,20 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
         this.itemList = itemList;
     }
 
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        mRecyclerView = recyclerView;
+    }
+
+    public RecyclerView getmRecyclerView(){
+
+        return mRecyclerView;
+    }
+
     /**
-     * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
+     * Called when RecyclerView needs a new {@link PessoaViewHolder} of the given type to represent
      * an item.
      * <p>
      * This new ViewHolder should be constructed with a new View that can represent the items
@@ -47,7 +73,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
      * layout file.
      * <p>
      * The new ViewHolder will be used to display items of the adapter using
-     * {@link #onBindViewHolder(ViewHolder, int, List)}. Since it will be re-used to display
+     * {@link #onBindViewHolder(PessoaViewHolder, int)}. Since it will be re-used to display
      * different items in the data set, it is a good idea to cache references to sub views of
      * the View to avoid unnecessary {@link View#findViewById(int)} calls.
      *
@@ -56,7 +82,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
      * @param viewType The view type of the new View.
      * @return A new ViewHolder that holds a View of the given view type.
      * @see #getItemViewType(int)
-     * @see #onBindViewHolder(ViewHolder, int)
+     * @see #onBindViewHolder(PessoaViewHolder, int)
      */
     @NonNull
     @Override
@@ -67,7 +93,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
 
     /**
      * Called by RecyclerView to display the data at the specified position. This method should
-     * update the contents of the {@link ViewHolder#itemView} to reflect the item at the given
+     * update the contents of the {@link PessoaViewHolder#itemView} to reflect the item at the given
      * position.
      * <p>
      * Note that unlike {@link ListView}, RecyclerView will not call this method
@@ -75,10 +101,10 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
      * invalidated or the new position cannot be determined. For this reason, you should only
      * use the <code>position</code> parameter while acquiring the related data item inside
      * this method and should not keep a copy of it. If you need the position of an item later
-     * on (e.g. in a click listener), use {@link ViewHolder#getAdapterPosition()} which will
+     * on (e.g. in a click listener), use {@link PessoaViewHolder#getAdapterPosition()} which will
      * have the updated adapter position.
      * <p>
-     * Override {@link #onBindViewHolder(ViewHolder, int, List)} instead if Adapter can
+     * Override {@link #onBindViewHolder(PessoaViewHolder, int)} instead if Adapter can
      * handle efficient partial bind.
      *
      * @param holder   The ViewHolder which should be updated to represent the contents of the
@@ -97,6 +123,10 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
         holder.textViewNome.setText(nome);
         holder.textViewPersonagem.setText(personagem);
         Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView);
+    }
+
+    public String getId(int position){
+        return itemList.get(position).getId();
     }
 
     /**
@@ -127,6 +157,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
+                        InUse = true;
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             mListener.onItemClick(position);

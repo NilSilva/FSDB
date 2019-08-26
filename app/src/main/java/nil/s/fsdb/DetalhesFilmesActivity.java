@@ -174,6 +174,24 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     public void onItemClick(int position) {
 
         Intent intent = new Intent(this, DetalhesPessoasActivity.class);
+
+        Log.d(TAG, "onItemClick: adaptador P - " + adaptadorPessoas.getmRecyclerView().toString());
+        Log.d(TAG, "onItemClick: rec  P - " + recyclerViewPessoas.toString());
+        Log.d(TAG, "onItemClick: adaptador E - " + adaptadorEquipa.getmRecyclerView().toString());
+        Log.d(TAG, "onItemClick: rec E - " + recyclerViewEquipa.toString());
+
+        String id;
+        if (adaptadorPessoas.getInUse()) {
+            id = adaptadorPessoas.getId(position);
+            adaptadorPessoas.NotInUse();
+        } else {
+            id = adaptadorEquipa.getId(position);
+        }
+
+        intent.putExtra("id", id);
+
+        Toast.makeText(this, "ID - " + id, Toast.LENGTH_LONG).show();
+
         startActivity(intent);
     }
 
