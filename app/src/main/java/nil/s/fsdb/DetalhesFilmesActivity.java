@@ -175,11 +175,6 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
         Intent intent = new Intent(this, DetalhesPessoasActivity.class);
 
-        Log.d(TAG, "onItemClick: adaptador P - " + adaptadorPessoas.getmRecyclerView().toString());
-        Log.d(TAG, "onItemClick: rec  P - " + recyclerViewPessoas.toString());
-        Log.d(TAG, "onItemClick: adaptador E - " + adaptadorEquipa.getmRecyclerView().toString());
-        Log.d(TAG, "onItemClick: rec E - " + recyclerViewEquipa.toString());
-
         String id;
         if (adaptadorPessoas.getInUse()) {
             id = adaptadorPessoas.getId(position);
@@ -187,6 +182,8 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         } else {
             id = adaptadorEquipa.getId(position);
         }
+
+        Log.d(TAG, "onItemClick: position - " + position);
 
         intent.putExtra("id", id);
 

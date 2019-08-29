@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        app:cardBackgroundColor="@android:color/black"
+        app:cardElevation="10dp">
+
+        <TextView
+            android:id="@+id/textViewItemFilmografiaMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Movie"
+            android:textColor="@android:color/white" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        app:cardBackgroundColor="#02162B">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageViewItemFilmografia"
+                android:layout_width="100dp"
+                android:layout_height="148dp"
+                android:src="@mipmap/ic_placeholder" />
+
+            <TextView
+                android:id="@+id/textViewItemFilmografiaNome"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:lines="2"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                tools:text="Gangs of New York" />
+
+            <TextView
+                android:id="@+id/textViewItemFilmografiaPersonagem_job"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:lines="2"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                tools:text="William 'Bill the Butcher' Cutting" />
+
+            <TextView
+                android:id="@+id/textViewItemFilmografiaAno"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                tools:text="2002" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

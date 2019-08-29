@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -30,11 +31,11 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
 
     private boolean InUse = false;
 
-    public boolean getInUse(){
+    public boolean getInUse() {
         return InUse;
     }
 
-    public void NotInUse(){
+    public void NotInUse() {
         InUse = false;
     }
 
@@ -59,7 +60,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
         mRecyclerView = recyclerView;
     }
 
-    public RecyclerView getmRecyclerView(){
+    public RecyclerView getmRecyclerView() {
 
         return mRecyclerView;
     }
@@ -112,7 +113,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(@NonNull AdaptadorPessoas.PessoaViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AdaptadorPessoas.PessoaViewHolder holder, int position) {
 
         ItemFilmePessoas currentItem = itemList.get(position);
 
@@ -122,10 +123,20 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
 
         holder.textViewNome.setText(nome);
         holder.textViewPersonagem.setText(personagem);
-        Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView);
+        Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView, new Callback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+                holder.imageView.setImageResource(R.mipmap.ic_no_image);
+            }
+        });
     }
 
-    public String getId(int position){
+    public String getId(int position) {
         return itemList.get(position).getId();
     }
 

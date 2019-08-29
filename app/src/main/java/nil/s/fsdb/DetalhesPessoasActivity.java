@@ -1,17 +1,16 @@
 package nil.s.fsdb;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,10 +24,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Locale;
 
-public class DetalhesPessoasActivity extends AppCompatActivity {
+public class DetalhesPessoasActivity extends AppCompatActivity implements AdaptadorFilmografia.OnItemClickListenerP {
 
     private String TAG = "DetalhesPessoasActivity";
 
@@ -46,7 +48,11 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
 
     private Context context = this;
 
-    private TableLayout tb;
+    private RecyclerView recyclerView;
+
+    private AdaptadorFilmografia adaptadorFilmografia;
+
+    private ArrayList<ItemFilmografia> itemFilmografias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,29 +67,7 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
         textViewKnownForDepartment = findViewById(R.id.textViewDetalhesPessoasJob);
         textViewGender = findViewById(R.id.textViewDetalhesPessoasSexo);
 
-        tb = findViewById(R.id.tableLayoutDetalhesPessoasFilmografia);
-
-        TableRow tr = new TableRow(this);
-        TextView c1 = new TextView(this);
-        TextView c2 = new TextView(this);
-        TextView c3 = new TextView(this);
-        TextView c4 = new TextView(this);
-
-        c1.setBackgroundResource(R.drawable.border);
-        c1.setText("Year");
-        c2.setBackgroundResource(R.drawable.border);
-        c2.setText("Type");
-        c3.setBackgroundResource(R.drawable.border);
-        c3.setText("Name");
-        c4.setBackgroundResource(R.drawable.border);
-        c4.setText("Character");
-
-        tr.addView(c1);
-        tr.addView(c2);
-        tr.addView(c3);
-        tr.addView(c4);
-
-        tb.addView(tr);
+        recyclerView = findViewById(R.id.recyclerViewDetalhesPessoasFilmografia);
 
         Intent intent = getIntent();
 
@@ -93,10 +77,19 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
 
         parseJSON();
 
-        popularTabela();
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        itemFilmografias = new ArrayList<>();
+
+        carregarFilmografia();
     }
 
-    private void popularTabela() {
+    private void carregarFilmografia() {
+
+        itemFilmografias.clear();
 
         final String iso_3166_1 = Locale.getDefault().getDisplayLanguage();
         String language = iso_3166_1 + "-" + iso_3166_1.toUpperCase();
@@ -105,7 +98,7 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
         String url = "https://api.themoviedb.org/3/person/" + id + "/combined_credits?api_key=" + ChaveAPI.TMDb;
         Log.d(TAG, "url - " + url);
 
-        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -113,79 +106,108 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
 
                             JSONArray jsonArray = response.getJSONArray("cast");
 
+                            //ArrayList<ItemFilmografia> list = new ArrayList<>();
+
                             for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject object = jsonArray.getJSONObject(i);
 
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                ItemFilmografia filmografia = new ItemFilmografia();
 
-                                String media = jsonObject.getString("media_type");
+                                String media = object.getString("media_type");
+                                filmografia.setType(media);
+                                filmografia.setId(object.getString("id"));
                                 Log.d(TAG, "onResponse: media - " + media);
 
-                                String ano;
-                                String title;
                                 if (media.equals("movie")) {
 
                                     try {
-                                        ano = jsonObject.getString("release_date").substring(0, 4);
+                                        filmografia.setYear(object.getString("release_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        ano = "n/a";
+                                        filmografia.setYear("n/a");
                                     }
-                                    Log.d(TAG, "onResponse: ano - " + ano);
 
-                                    title = jsonObject.getString("title");
-                                    Log.d(TAG, "onResponse: title - " + title);
+                                    filmografia.setName(object.getString("title"));
                                 } else {
 
                                     try {
-                                        ano = jsonObject.getString("first_air_date").substring(0, 4);
+                                        filmografia.setYear(object.getString("first_air_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        ano = "n/a";
+                                        filmografia.setYear("n/a");
                                     }
-                                    Log.d(TAG, "onResponse: ano - " + ano);
 
-                                    title = jsonObject.getString("name");
-                                    Log.d(TAG, "onResponse: title - " + title);
+                                    filmografia.setName(object.getString("name"));
                                 }
 
-                                String character = jsonObject.getString("character");
-                                Log.d(TAG, "onResponse: char - " + character);
+                                try {
+                                    filmografia.setCharacter(object.getString("character"));
+                                } catch (JSONException e) {
+                                    filmografia.setCharacter("n/a");
+                                }
 
-                                TableRow tr = new TableRow(context);
-                                tr.setBackgroundResource(R.drawable.border);
+                                filmografia.setJob("Actor");
 
-                                TextView c1 = new TextView(context);
-                                TextView c2 = new TextView(context);
-                                TextView c3 = new TextView(context);
-                                TextView c4 = new TextView(context);
+                                filmografia.setImagePath(object.getString("poster_path"));
 
-                                c1.setBackgroundResource(R.drawable.border);
-                                c1.setGravity(Gravity.CENTER);
-                                c1.setWidth(100);
-                                c1.setText(ano);
+                                Log.d(TAG, "onResponse: " + filmografia.toString());
 
-                                c2.setBackgroundResource(R.drawable.border);
-                                c2.setGravity(Gravity.CENTER);
-                                c1.setWidth(100);
-                                c2.setText(media);
-
-                                c3.setBackgroundResource(R.drawable.border);
-                                c3.setGravity(Gravity.CENTER);
-                                c3.setText(title);
-
-                                c4.setBackgroundResource(R.drawable.border);
-                                c4.setGravity(Gravity.CENTER);
-                                c4.setText(character);
-
-                                tr.addView(c1);
-                                tr.addView(c2);
-                                tr.addView(c3);
-                                tr.addView(c4);
-
-                                Log.d(TAG, "onResponse: tr - " + tr.getChildCount());
-
-                                tb.addView(tr, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-
-                                Log.d(TAG, "onResponse: tb - " + tb.getChildCount());
+                                //list.add(filmografia);
+                                itemFilmografias.add(filmografia);
                             }
+
+                            jsonArray = response.getJSONArray("crew");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject object = jsonArray.getJSONObject(i);
+
+                                ItemFilmografia filmografia = new ItemFilmografia();
+
+                                String media = object.getString("media_type");
+                                filmografia.setType(media);
+                                Log.d(TAG, "onResponse: media - " + media);
+
+                                if (media.equals("movie")) {
+
+                                    try {
+                                        filmografia.setYear(object.getString("release_date").substring(0, 4));
+                                    } catch (Exception e) {
+                                        filmografia.setYear("n/a");
+                                    }
+
+                                    filmografia.setName(object.getString("title"));
+                                } else {
+
+                                    try {
+                                        filmografia.setYear(object.getString("first_air_date").substring(0, 4));
+                                    } catch (Exception e) {
+                                        filmografia.setYear("n/a");
+                                    }
+
+                                    filmografia.setName(object.getString("name"));
+                                }
+
+                                //filmografia.setCharacter(object.getString("character"));
+
+                                filmografia.setJob(object.getString("job"));
+                                filmografia.setCharacter("n/a");
+
+                                filmografia.setImagePath("poster_path");
+
+                                Log.d(TAG, "onResponse: " + filmografia.toString());
+
+                                //list.add(filmografia);
+                                itemFilmografias.add(filmografia);
+                            }
+
+                            Collections.sort(itemFilmografias, new Comparator<ItemFilmografia>() {
+                                @Override
+                                public int compare(ItemFilmografia filmografia1, ItemFilmografia filmografia2) {
+                                    return filmografia2.getYear().compareTo(filmografia1.getYear());
+                                }
+                            });
+
+                            adaptadorFilmografia = new AdaptadorFilmografia(DetalhesPessoasActivity.this, itemFilmografias);
+                            recyclerView.setAdapter(adaptadorFilmografia);
+                            adaptadorFilmografia.setOnItemClickListenerP(DetalhesPessoasActivity.this);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -233,14 +255,21 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
 
                             //TODO: fazer isto em condições!!!!!!!!!!!
                             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-                            int birthYear = Integer.parseInt(birthday.substring(0, 4));
-                            int age = currentYear - birthYear;
+                            int birthYear = 0;
+                            int age;
+                            try {
+                                birthYear = Integer.parseInt(birthday.substring(0, 4));
+                                age = currentYear - birthYear;
+                                textViewDateOfBirth.setText(birthday + "(" + age + ")");
+                            } catch (NumberFormatException e) {
+                                textViewDateOfBirth.setText("-");
+                            }
+
                             Log.d(TAG, "onResponse: cur - " + currentYear);
                             Log.d(TAG, "onResponse: birth - " + birthYear);
 
                             textViewNome.setText(nome);
                             textViewBio.setText(biography);
-                            textViewDateOfBirth.setText(birthday + "(" + age + ")");
                             textViewKnownForDepartment.setText(knownForDepartment);
 
                             if (gender.equals("1")) {
@@ -269,5 +298,25 @@ public class DetalhesPessoasActivity extends AppCompatActivity {
         });
 
         requestQueue.add(request);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        if (adaptadorFilmografia.getMedia(position).equals("movie")) {
+            Intent intent = new Intent(this, DetalhesFilmesActivity.class);
+
+            String id = adaptadorFilmografia.getId(position);
+
+            Log.d(TAG, "onItemClick: position - " + position);
+
+            intent.putExtra("id", id);
+
+            Toast.makeText(this, "ID - " + id, Toast.LENGTH_LONG).show();
+
+            startActivity(intent);
+        } else {
+
+            Toast.makeText(this, adaptadorFilmografia.getNome(position) + " - ID - " + id, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -15,6 +15,12 @@ public class ItemFilmePessoas {
         this.id = id;
     }
 
+    public ItemFilmePessoas(String id, String name, String profile_path){
+        this.name = name;
+        this.profile_path += profile_path;
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
