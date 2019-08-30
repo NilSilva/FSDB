@@ -3,10 +3,12 @@ package nil.s.fsdb;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -355,10 +357,16 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         if (!wasRestored) {
             player.cueVideo(key);
             Log.d("Youtube -->", "Success - " + key);
+            if(key.equals("No Video")){
+                CardView cardView = findViewById(R.id.cardViewDetalhesFilmeTrailer);
+                cardView.setVisibility(View.GONE);
+            }
         }
     }
     @Override
     public void onInitializationFailure(YouTubePlayer.Provider arg0, YouTubeInitializationResult arg1){
+        CardView cardView = findViewById(R.id.cardViewDetalhesFilmeTrailer);
+        cardView.setVisibility(View.GONE);
         Log.d("Youtube -->", "Failure");
     }
 }

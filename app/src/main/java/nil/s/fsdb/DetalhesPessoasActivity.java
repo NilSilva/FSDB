@@ -327,8 +327,17 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
 
             startActivity(intent);
         } else {
+            Intent intent = new Intent(this, DetalhesTVActivity.class);
 
-            Toast.makeText(this, adaptadorFilmografia.getNome(position) + " - ID - " + id, Toast.LENGTH_LONG).show();
+            String id = adaptadorFilmografia.getId(position);
+
+            Log.d(TAG, "onItemClick: position - " + position);
+
+            intent.putExtra("id", id);
+
+            Toast.makeText(this, "ID - " + id, Toast.LENGTH_LONG).show();
+
+            startActivity(intent);
         }
     }
 }
