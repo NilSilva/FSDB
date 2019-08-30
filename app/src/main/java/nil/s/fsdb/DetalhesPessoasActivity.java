@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -163,6 +164,7 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
 
                                 String media = object.getString("media_type");
                                 filmografia.setType(media);
+                                filmografia.setId(object.getString("id"));
                                 Log.d(TAG, "onResponse: media - " + media);
 
                                 if (media.equals("movie")) {
@@ -190,7 +192,7 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
                                 filmografia.setJob(object.getString("job"));
                                 filmografia.setCharacter("n/a");
 
-                                filmografia.setImagePath("poster_path");
+                                filmografia.setImagePath(object.getString("poster_path"));
 
                                 Log.d(TAG, "onResponse: " + filmografia.toString());
 
@@ -251,7 +253,17 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
                             String knownForDepartment = response.getString("known_for_department");
                             String gender = response.getString("gender");
 
-                            Picasso.get().load(imagePath).placeholder(R.drawable.progress_animation).into(imageView);
+                            Picasso.get().load(imagePath).placeholder(R.drawable.progress_animation).into(imageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+
+                                    imageView.setImageResource(R.mipmap.ic_no_image);
+                                }
+                            });
 
                             //TODO: fazer isto em condições!!!!!!!!!!!
                             int currentYear = Calendar.getInstance().get(Calendar.YEAR);

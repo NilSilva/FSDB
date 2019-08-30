@@ -20,6 +20,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -315,8 +316,28 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         Log.d(TAG, "Campos: budget - " + filme.getBudget());
         Log.d(TAG, "Campos: runtime - " + filme.getRuntime());
 
-        Picasso.get().load(backURL).placeholder(R.drawable.progress_animation).into(imageViewBackground);
-        Picasso.get().load(posterURL).placeholder(R.drawable.progress_animation).into(imageViewPoster);
+        Picasso.get().load(backURL).placeholder(R.drawable.progress_animation).into(imageViewBackground, new Callback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+                imageViewBackground.setImageResource(R.mipmap.ic_no_image);
+            }
+        });
+        Picasso.get().load(posterURL).placeholder(R.drawable.progress_animation).into(imageViewPoster, new Callback() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+                imageViewPoster.setImageResource(R.mipmap.ic_no_image);
+            }
+        });
 
         textViewNome.setText(nome);
         textViewOverview.setText(overview);
