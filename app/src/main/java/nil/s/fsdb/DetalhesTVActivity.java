@@ -2,7 +2,6 @@ package nil.s.fsdb;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +16,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +43,10 @@ public class DetalhesTVActivity extends AppCompatActivity {
 
     private RequestQueue requestQueue;
 
+    private CarouselView carouselView;
+
+    private ArrayList<String> backdrops = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +55,7 @@ public class DetalhesTVActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
 
-        imageViewBackdrop = findViewById(R.id.imageViewDetalhesTVsBackground);
+        //imageViewBackdrop = findViewById(R.id.imageViewDetalhesTVsBackground);
         imageViewPoster = findViewById(R.id.imageViewDetalhesTVsPoster);
 
         textViewNome = findViewById(R.id.textViewDetalhesTVsNome);
@@ -60,9 +66,13 @@ public class DetalhesTVActivity extends AppCompatActivity {
         textViewTemporadas = findViewById(R.id.textViewDetalhesTVsTemporadas);
         textViewOverview = findViewById(R.id.textViewDetalhesTVsOverview);
 
+        carouselView = findViewById(R.id.carouselViewTVsBackground);
+
         requestQueue = Volley.newRequestQueue(this);
 
         GetInfo();
+
+        getImages();
     }
 
     private void GetInfo() {
@@ -81,7 +91,7 @@ public class DetalhesTVActivity extends AppCompatActivity {
                             itemTV.setBackdrop_path(response.getString("backdrop_path"));
                             itemTV.setPoster_path(response.getString("poster_path"));
                             itemTV.setNome(response.getString("name"));
-                            itemTV.setIn_production((boolean)response.get("in_production"));
+                            itemTV.setIn_production((boolean) response.get("in_production"));
                             itemTV.setFirst_air_date(response.getString("first_air_date"));
                             itemTV.setRuntime("-");
                             itemTV.setNumeroEpisodios(response.getString("number_of_episodes"));
@@ -105,10 +115,10 @@ public class DetalhesTVActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void PreencherCampos(ItemTV tv){
+    private void PreencherCampos(ItemTV tv) {
         Log.d(TAG, "PreencherCampos: " + tv.toString());
 
-        Picasso.get().load(tv.getBackdrop_path()).into(imageViewBackdrop, new Callback() {
+        /*Picasso.get().load(tv.getBackdrop_path()).into(imageViewBackdrop, new Callback() {
             @Override
             public void onSuccess() {
 
@@ -118,7 +128,7 @@ public class DetalhesTVActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 imageViewBackdrop.setImageResource(R.mipmap.ic_no_image);
             }
-        });
+        });*/
         Picasso.get().load(tv.getPoster_path()).into(imageViewPoster, new Callback() {
             @Override
             public void onSuccess() {
@@ -133,9 +143,9 @@ public class DetalhesTVActivity extends AppCompatActivity {
 
         textViewNome.setText(tv.getNome());
 
-        if (tv.getIn_production()){
+        if (tv.getIn_production()) {
             textViewProduction.setText("Yes");
-        }else{
+        } else {
             textViewProduction.setText("No");
         }
 
@@ -145,4 +155,43 @@ public class DetalhesTVActivity extends AppCompatActivity {
         textViewTemporadas.setText(tv.getNumeroTemporadas());
         textViewOverview.setText(tv.getOverview());
     }
+
+    private void getImages() {
+        String url = "https://api.themoviedb.org/3/tv/" + id + "/images?api_key=" + ChaveAPI.TMDb;
+        Log.d(TAG, "getImages: url - " + url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("backdrops");
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        backdrops.add("https://image.tmdb.org/t/p/original/" + jsonArray.getJSONObject(i).getString("file_path"));
+                    }
+
+                    carouselView.setImageListener(imageListener);
+                    carouselView.setPageCount(jsonArray.length());
+                    Log.d(TAG, "onCreate: size - " + jsonArray.length());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        requestQueue.add(request);
+    }
+
+    ImageListener imageListener = new ImageListener() {
+        @Override
+        public void setImageForPosition(int position, ImageView imageView) {
+            Picasso.get().load(backdrops.get(position)).into(imageView);
+            Log.d(TAG, "setImageForPosition: " + backdrops.get(position));
+        }
+    };
 }

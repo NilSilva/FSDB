@@ -14,6 +14,10 @@
             android:title="Filmes" />
 
         <item
+            android:id="@+id/action_tv"
+            android:title="Series" />
+
+        <item
             android:id="@+id/action_pessoas"
             android:title="Pessoas" />
 

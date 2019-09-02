@@ -1,8 +1,6 @@
 package nil.s.fsdb;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Callback;
@@ -18,32 +17,23 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeViewHolder> {
+public class AdaptadorTV extends RecyclerView.Adapter<AdaptadorTV.TvViewHolder>{
 
-    private String TAG = "AdaptadorFilme";
+    private String TAG = "AdaptadorTV";
 
     private Context context;
 
-    private ArrayList<ItemFilme> itemList;
+    private ArrayList<ItemTV> list;
 
-    private OnItemClickListener mListener;
+    private OnItemClickListener listener;
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
-    }
-
-    public  AdaptadorFilme(Context context, ArrayList<ItemFilme> itemList){
-
+    public AdaptadorTV(Context context, ArrayList<ItemTV> list){
         this.context = context;
-        this.itemList = itemList;
+        this.list = list;
     }
 
     /**
-     * Called when RecyclerView needs a new {@link androidx.recyclerview.widget.RecyclerView.ViewHolder} of the given type to represent
+     * Called when RecyclerView needs a new {@link TvViewHolder} of the given type to represent
      * an item.
      * <p>
      * This new ViewHolder should be constructed with a new View that can represent the items
@@ -51,7 +41,7 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
      * layout file.
      * <p>
      * The new ViewHolder will be used to display items of the adapter using
-     * {@link #onBindViewHolder(FilmeViewHolder, int)}. Since it will be re-used to display
+     * {@link #onBindViewHolder(TvViewHolder, int)}. Since it will be re-used to display
      * different items in the data set, it is a good idea to cache references to sub views of
      * the View to avoid unnecessary {@link View#findViewById(int)} calls.
      *
@@ -60,18 +50,18 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
      * @param viewType The view type of the new View.
      * @return A new ViewHolder that holds a View of the given view type.
      * @see #getItemViewType(int)
-     * @see #onBindViewHolder(FilmeViewHolder, int)
+     * @see #onBindViewHolder(TvViewHolder, int)
      */
     @NonNull
     @Override
-    public FilmeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_filme, parent, false);
-        return new FilmeViewHolder(view);
+    public TvViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_pessoa, parent, false);
+        return new TvViewHolder(view);
     }
 
     /**
      * Called by RecyclerView to display the data at the specified position. This method should
-     * update the contents of the {@link androidx.recyclerview.widget.RecyclerView.ViewHolder#itemView} to reflect the item at the given
+     * update the contents of the {@link TvViewHolder#itemView} to reflect the item at the given
      * position.
      * <p>
      * Note that unlike {@link ListView}, RecyclerView will not call this method
@@ -79,10 +69,10 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
      * invalidated or the new position cannot be determined. For this reason, you should only
      * use the <code>position</code> parameter while acquiring the related data item inside
      * this method and should not keep a copy of it. If you need the position of an item later
-     * on (e.g. in a click listener), use {@link androidx.recyclerview.widget.RecyclerView.ViewHolder#getAdapterPosition()} which will
+     * on (e.g. in a click listener), use {@link TvViewHolder#getAdapterPosition()} which will
      * have the updated adapter position.
      * <p>
-     * Override {@link #onBindViewHolder(FilmeViewHolder, int)} instead if Adapter can
+     * Override {@link #onBindViewHolder(TvViewHolder, int)} instead if Adapter can
      * handle efficient partial bind.
      *
      * @param holder   The ViewHolder which should be updated to represent the contents of the
@@ -90,16 +80,12 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(@NonNull final FilmeViewHolder holder, int position) {
-
-        ItemFilme currentItem = itemList.get(position);
+    public void onBindViewHolder(@NonNull final TvViewHolder holder, int position) {
+        ItemTV currentItem = list.get(position);
 
         String imageUrl = currentItem.getPoster_path();
-        String nome = currentItem.getTitle();
-        String data = currentItem.getRelease_date();
+        String nome = currentItem.getNome();
 
-        holder.textViewNome.setText(nome);
-        holder.textViewData.setText(data);
         Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView, new Callback() {
             @Override
             public void onSuccess() {
@@ -111,6 +97,8 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
                 holder.imageView.setImageResource(R.mipmap.ic_no_image);
             }
         });
+
+        holder.textView.setText(nome);
     }
 
     /**
@@ -120,30 +108,37 @@ public class AdaptadorFilme extends RecyclerView.Adapter<AdaptadorFilme.FilmeVie
      */
     @Override
     public int getItemCount() {
-        return itemList.size();
+        return list.size();
     }
 
-    public class FilmeViewHolder extends RecyclerView.ViewHolder {
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
 
-        public ImageView imageView;
+    public void setOnItemClickListener(AdaptadorTV.OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
-        public TextView textViewNome;
-        public TextView textViewData;
+    public class TvViewHolder extends RecyclerView.ViewHolder{
 
-        public FilmeViewHolder(@NonNull View itemView) {
+        private ImageView imageView;
+
+        private TextView textView;
+
+        public TvViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imageView = itemView.findViewById(R.id.imageViewItemFilme);
+            imageView = itemView.findViewById(R.id.imageViewItemProcurarPessoa);
 
-            textViewNome = itemView.findViewById(R.id.textViewItemFilmeNome);
-            textViewData = itemView.findViewById(R.id.textViewItemFilmeData);
+            textView = itemView.findViewById(R.id.textViewItemProcurarPessoa);
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
+                    if(listener != null){
                         int position = getAdapterPosition();
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onItemClick(position);
                         }
                     }
                 }
