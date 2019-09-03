@@ -15,7 +15,8 @@
         <ImageView
             android:id="@+id/imageViewDetalhesFilmesBackground"
             android:layout_width="match_parent"
-            android:layout_height="205dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:background="@android:color/white"
             app:layout_constraintTop_toTopOf="parent" />
 

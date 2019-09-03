@@ -1,12 +1,17 @@
 package nil.s.fsdb;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
+import com.synnapps.carouselview.ImageClickListener;
 import com.synnapps.carouselview.ImageListener;
 
 import org.json.JSONArray;
@@ -24,8 +30,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class DetalhesTVActivity extends AppCompatActivity {
+import static android.widget.ImageView.ScaleType.FIT_XY;
+
+public class DetalhesTVActivity extends AppCompatActivity implements AdaptadorPessoas.OnItemClickListenerP {
 
     private String TAG = "DetalhesTVActivity";
     private String id;
@@ -46,6 +55,14 @@ public class DetalhesTVActivity extends AppCompatActivity {
     private CarouselView carouselView;
 
     private ArrayList<String> backdrops = new ArrayList<>();
+    private ArrayList<ItemFilmePessoas> listPessoas = new ArrayList<>();
+    private ArrayList<ItemFilmePessoas> listEquipa = new ArrayList<>();
+
+    private RecyclerView recyclerViewAtores;
+    private RecyclerView recyclerViewEquipa;
+
+    private AdaptadorPessoas adaptadorPessoas;
+    private AdaptadorPessoas adaptadorEquipa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +72,6 @@ public class DetalhesTVActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
 
-        //imageViewBackdrop = findViewById(R.id.imageViewDetalhesTVsBackground);
         imageViewPoster = findViewById(R.id.imageViewDetalhesTVsPoster);
 
         textViewNome = findViewById(R.id.textViewDetalhesTVsNome);
@@ -68,11 +84,97 @@ public class DetalhesTVActivity extends AppCompatActivity {
 
         carouselView = findViewById(R.id.carouselViewTVsBackground);
 
+        recyclerViewAtores = findViewById(R.id.recyclerViewDetalhesTvAtores);
+        recyclerViewEquipa = findViewById(R.id.recyclerViewDetalhesTvEquipa);
+
         requestQueue = Volley.newRequestQueue(this);
+
+        recyclerViewAtores.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+
+        linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+
+        recyclerViewAtores.setLayoutManager(linearLayoutManager);
+
+        recyclerViewEquipa.setHasFixedSize(true);
+
+        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this);
+
+        linearLayoutManager1.setOrientation(RecyclerView.HORIZONTAL);
+
+        recyclerViewEquipa.setLayoutManager(linearLayoutManager1);
+
+        buscarPessoas();
 
         GetInfo();
 
         getImages();
+    }
+
+    private void buscarPessoas() {
+        listPessoas.clear();
+        listEquipa.clear();
+
+        String url = "https://api.themoviedb.org/3/tv/" + id + "/credits?api_key=" + ChaveAPI.TMDb;
+        Log.d(TAG, "url credits - " + url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("cast");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject result = jsonArray.getJSONObject(i);
+
+                                String nome = result.getString("name");
+                                String personagem = result.getString("character");
+                                String image = result.getString("profile_path");
+                                String ID = result.getString("id");
+                                listPessoas.add(new ItemFilmePessoas(nome, personagem, image, ID));
+                                Log.d(TAG, "onResponse: cast - " + nome);
+                            }
+
+                            jsonArray = response.getJSONArray("crew");
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject result = jsonArray.getJSONObject(i);
+
+                                String nome = result.getString("name");
+                                String job = result.getString("job");
+                                String image = result.getString("profile_path");
+                                String ID = result.getString("id");
+                                listEquipa.add(new ItemFilmePessoas(nome, job, image, ID));
+                                Log.d(TAG, "onResponse: crew - " + nome);
+                            }
+
+                            adaptadorPessoas = new AdaptadorPessoas(DetalhesTVActivity.this, listPessoas);
+                            recyclerViewAtores.setAdapter(adaptadorPessoas);
+                            adaptadorPessoas.setOnItemClickListenerP(DetalhesTVActivity.this);
+
+                            adaptadorEquipa = new AdaptadorPessoas(DetalhesTVActivity.this, listEquipa);
+                            recyclerViewEquipa.setAdapter(adaptadorEquipa);
+                            adaptadorEquipa.setOnItemClickListenerP(DetalhesTVActivity.this);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            /**
+             * Callback method that an error has been occurred with the provided error code and optional
+             * user-readable message.
+             *
+             * @param error
+             */
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        requestQueue.add(request);
     }
 
     private void GetInfo() {
@@ -172,6 +274,7 @@ public class DetalhesTVActivity extends AppCompatActivity {
 
                     carouselView.setImageListener(imageListener);
                     carouselView.setPageCount(jsonArray.length());
+                    carouselView.setImageClickListener(imageClickListener);
                     Log.d(TAG, "onCreate: size - " + jsonArray.length());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -187,11 +290,51 @@ public class DetalhesTVActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    ImageClickListener imageClickListener = new ImageClickListener() {
+        @Override
+        public void onClick(int position) {
+            AlertDialog.Builder ImageDialog = new AlertDialog.Builder(DetalhesTVActivity.this);
+            ImageDialog.setTitle("Title");
+            final ImageView showImage = new ImageView(DetalhesTVActivity.this);
+            ImageDialog.setView(showImage);
+            showImage.setScaleType(FIT_XY);
+            showImage.setAdjustViewBounds(true);
+            Picasso.get().load(backdrops.get(position)).placeholder(R.drawable.progress_animation).into(showImage);
+
+            ImageDialog.setNegativeButton("ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface arg0, int arg1) {
+                }
+            });
+            ImageDialog.show();
+        }
+    };
+
     ImageListener imageListener = new ImageListener() {
         @Override
         public void setImageForPosition(int position, ImageView imageView) {
-            Picasso.get().load(backdrops.get(position)).into(imageView);
+            Picasso.get().load(backdrops.get(position)).placeholder(R.drawable.progress_animation).into(imageView);
             Log.d(TAG, "setImageForPosition: " + backdrops.get(position));
         }
     };
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent(this, DetalhesPessoasActivity.class);
+
+        String id;
+        if (adaptadorPessoas.getInUse()) {
+            id = adaptadorPessoas.getId(position);
+            adaptadorPessoas.NotInUse();
+        } else {
+            id = adaptadorEquipa.getId(position);
+        }
+
+        Log.d(TAG, "onItemClick: position - " + position);
+
+        intent.putExtra("id", id);
+
+        Toast.makeText(this, "ID - " + id, Toast.LENGTH_LONG).show();
+
+        startActivity(intent);
+    }
 }
