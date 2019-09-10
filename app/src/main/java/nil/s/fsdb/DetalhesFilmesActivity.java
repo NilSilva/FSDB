@@ -48,13 +48,12 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     private TextView textViewNome;
     private TextView textViewOverview;
     private TextView textViewData;
-    private TextView textViewRevenue;
+    private TextView textViewBoxOffice;
+    private TextView textViewBudget;
     private TextView textViewRuntime;
     private TextView textView;
     
     private RequestQueue requestQueue;
-
-    private ItemFilme itemFilme;
 
     private YouTubePlayerView youTubeView;
 
@@ -66,8 +65,8 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     private AdaptadorPessoas adaptadorPessoas;
     private AdaptadorPessoas adaptadorEquipa;
 
-    private ArrayList<ItemFilmePessoas> itemPessoasList;
-    private ArrayList<ItemFilmePessoas> itemEquipaList;
+    private ArrayList<ItemPessoas> itemPessoasList;
+    private ArrayList<ItemPessoas> itemEquipaList;
 
     private double rating;
 
@@ -89,9 +88,10 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewNome = findViewById(R.id.textViewDetalhesFilmesNome);
         textViewOverview = findViewById(R.id.textViewDetalhesFilmesOverview);
         textViewData = findViewById(R.id.textViewDetalhesFilmesData);
-        textViewRevenue = findViewById(R.id.textViewDetalhesFilmesRevenue);
+        textViewBoxOffice = findViewById(R.id.textViewDetalhesFilmesBoxOffice);
         textViewRuntime = findViewById(R.id.textViewDetalhesFilmesRuntime);
         textView = findViewById(R.id.textViewDetalhesFilmesVoteAverage);
+        textViewBudget = findViewById(R.id.textViewDetalhesFilmesBudget);
 
         recyclerViewPessoas = findViewById(R.id.recyclerViewDetalhesFilmeAtores);
         recyclerViewEquipa = findViewById(R.id.recyclerViewDetalhesFilmeEquipa);
@@ -136,27 +136,36 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                             JSONArray jsonArray = response.getJSONArray("cast");
 
                             for(int i = 0;i < jsonArray.length();i++){
+
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String nome = result.getString("name");
-                                String personagem = result.getString("character");
-                                String image = result.getString("profile_path");
-                                String ID = result.getString("id");
-                                itemPessoasList.add(new ItemFilmePessoas(nome, personagem, image, ID));
-                                Log.d(TAG, "onResponse: cast - " + nome);
+                                ItemPessoas itemPessoa = new ItemPessoas();
+
+                                itemPessoa.setName(result.getString("name"));
+                                itemPessoa.setCharacter(result.getString("character"));
+                                itemPessoa.setProfile_path(result.getString("profile_path"));
+                                itemPessoa.setId(result.getString("id"));
+
+                                itemPessoasList.add(itemPessoa);
+
+                                Log.d(TAG, "onResponse: cast - " + itemPessoa.getName());
                             }
 
                             jsonArray = response.getJSONArray("crew");
 
                             for(int i = 0;i < jsonArray.length();i++){
+
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String nome = result.getString("name");
-                                String job = result.getString("job");
-                                String image = result.getString("profile_path");
-                                String ID = result.getString("id");
-                                itemEquipaList.add(new ItemFilmePessoas(nome, job, image, ID));
-                                Log.d(TAG, "onResponse: crew - " + nome);
+                                ItemPessoas itemPessoa = new ItemPessoas();
+
+                                itemPessoa.setName(result.getString("name"));
+                                itemPessoa.setCharacter(result.getString("job"));
+                                itemPessoa.setProfile_path(result.getString("profile_path"));
+                                itemPessoa.setId(result.getString("id"));
+
+                                itemEquipaList.add(itemPessoa);
+                                Log.d(TAG, "onResponse: crew - " + itemPessoa.getName());
                             }
 
                             adaptadorPessoas = new AdaptadorPessoas(DetalhesFilmesActivity.this, itemPessoasList);
@@ -209,11 +218,11 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
     private void parseJSON() {
 
-        final String iso_3166_1 = Locale.getDefault().getDisplayLanguage();
+        /*final String iso_3166_1 = Locale.getDefault().getDisplayLanguage();
         String language = iso_3166_1 + "-" + iso_3166_1.toUpperCase();
-        Log.d(TAG, "lang - " + language);
+        Log.d(TAG, "lang - " + language);*/
 
-        String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + ChaveAPI.TMDb + "&language=" + language + "&append_to_response=videos,release_dates";
+        String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + ChaveAPI.TMDb + "&append_to_response=videos,release_dates";
         Log.d(TAG, "url - " + url);
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -225,74 +234,28 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                             JSONObject videos = response.getJSONObject("videos");
                             JSONArray results = videos.getJSONArray("results");
 
+                            ItemFilme itemFilme = new ItemFilme();
+
                             for(int i = 0;i < results.length();i++){
                                 JSONObject result = results.getJSONObject(i);
 
                                 if(result.getString("type").equals("Trailer") && result.getString("site").equals("YouTube")){
-                                    key = result.getString("key");
-                                    break;
-                                }
-                            }
-
-                            JSONObject release_dates = response.getJSONObject("release_dates");
-                            JSONArray RDresults = release_dates.getJSONArray("results");
-                            JSONObject info = null;
-
-                            for(int i = 0;i < RDresults.length();i++){
-                                JSONObject result = RDresults.getJSONObject(i);
-                                Log.d(TAG, "onResponse: result iso - " + result.getString("iso_3166_1"));
-
-                                if(result.getString("iso_3166_1").equals(iso_3166_1)){
-                                    //TODO:this gives an array!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                    info = result.getJSONObject("release_dates");
+                                    itemFilme.setKey(result.getString("key"));
                                     break;
                                 }
                             }
 
                             Log.d(TAG, "video key - " + key);
 
-                            rating = response.getDouble("vote_average");
-                            Log.d(TAG, "onResponse: 1" + response.getString("vote_average"));
-
-                            String bud = response.getString("budget");
-                            int budget;
-                            String rev = response.getString("revenue");
-                            long revenue;
-                            String run = response.getString("runtime");
-                            int runtime;
-
-                            try {
-                                budget = Integer.parseInt(bud);
-                            }catch (Exception e){
-                                budget = -1;
-                            }
-                            try {
-                                revenue = Long.parseLong(rev);
-                            }catch (Exception e){
-                                revenue = -1;
-                            }
-                            try {
-                                runtime = Integer.parseInt(run);
-                            }catch (Exception e){
-                                runtime = -1;
-                            }
-
-                            itemFilme = new ItemFilme(
-                                    response.getString("title"),
-                                    response.getString("poster_path"),
-                                    response.getString("backdrop_path"),
-                                    response.getString("release_date"),
-                                    budget,
-                                    revenue,
-                                    response.getString("overview"),
-                                    runtime,
-                                    key
-                            );
-                            if (info != null) {
-                                Log.d(TAG, "onResponse: data" + info.getString("release_date"));
-                            }else {
-                                Log.d(TAG, "onResponse: info = null");
-                            }
+                            itemFilme.setVote(response.getDouble("vote_average"));
+                            itemFilme.setBudget(response.getInt("budget"));
+                            itemFilme.setRevenue(response.getInt("revenue"));
+                            itemFilme.setRuntime(response.getInt("runtime"));
+                            itemFilme.setTitle(response.getString("title"));
+                            itemFilme.setPoster_path(response.getString("poster_path"));
+                            itemFilme.setBackdrop_path(response.getString("backdrop_path"));
+                            itemFilme.setRelease_date(response.getString("release_date"));
+                            itemFilme.setOverview(response.getString("overview"));
 
                             Campos(itemFilme);
 
@@ -318,22 +281,9 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
     private void Campos(ItemFilme filme){
 
-        String backURL = filme.getBackdrop_path();
-        String posterURL = filme.getPoster_path();
-        String nome = filme.getTitle();
-        String overview = filme.getOverview();
-        key = filme.getKey();
+        Log.d(TAG, "Campos: " + filme.toString());
 
-        Log.d(TAG, "nome - " + nome);
-        Log.d(TAG, "poster - " + posterURL);
-        Log.d(TAG, "back - " + backURL);
-        Log.d(TAG, "video url - " + key);
-        Log.d(TAG, "Campos: data - " + filme.getRelease_date());
-        Log.d(TAG, "Campos: revenue - " + filme.getRevenue());
-        Log.d(TAG, "Campos: budget - " + filme.getBudget());
-        Log.d(TAG, "Campos: runtime - " + filme.getRuntime());
-
-        Picasso.get().load(backURL).placeholder(R.drawable.progress_animation).into(imageViewBackground, new Callback() {
+        Picasso.get().load(filme.getBackdrop_path()).placeholder(R.drawable.progress_animation).into(imageViewBackground, new Callback() {
             @Override
             public void onSuccess() {
             }
@@ -344,7 +294,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
                 imageViewBackground.setImageResource(R.mipmap.ic_no_image);
             }
         });
-        Picasso.get().load(posterURL).placeholder(R.drawable.progress_animation).into(imageViewPoster, new Callback() {
+        Picasso.get().load(filme.getPoster_path()).placeholder(R.drawable.progress_animation).into(imageViewPoster, new Callback() {
             @Override
             public void onSuccess() {
             }
@@ -356,20 +306,15 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
             }
         });
 
-        textViewNome.setText(nome);
-        textViewOverview.setText(overview);
+        textViewNome.setText(filme.getTitle());
+        textViewOverview.setText(filme.getOverview());
         textViewData.setText(filme.getRelease_date());
-        long lucro = filme.getRevenue() - filme.getBudget();
-        String boxOffice = filme.getRevenue() + "/" + filme.getBudget() + "(" + lucro + ")";
-        textViewRevenue.setText(boxOffice);
+        textViewBudget.setText(String.valueOf(filme.getBudget()));
+        textViewBoxOffice.setText(String.valueOf(filme.getRevenue()));
         textViewRuntime.setText(String.valueOf(filme.getRuntime()));
+        textView.setText(String.valueOf(progressBar.getProgress()));
 
-        Log.d(TAG, "onResponse: rating - " + rating);
-
-        progressBar.setProgress((int)(rating * 10));
-        textView.setText(progressBar.getProgress() + "");
-
-        Log.d(TAG, "onResponse: progress - " + progressBar.getProgress());
+        progressBar.setProgress((int)(filme.getVote() * 10));
 
         youTubeView.initialize(ChaveAPI.youtube, this);
     }

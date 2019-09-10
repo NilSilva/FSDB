@@ -85,11 +85,14 @@ public class MainFragment extends Fragment implements AdaptadorFilme.OnItemClick
                             for(int i = 0;i < jsonArray.length();i++){
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String id = result.getString("id");
-                                String nome = result.getString("title");
-                                String image = result.getString("poster_path");
-                                String data = result.getString("release_date");
-                                itemFilmesList.add(new ItemFilme(id, nome, image, data));
+                                ItemFilme itemFilme = new ItemFilme();
+
+                                itemFilme.setTitle(result.getString("title"));
+                                itemFilme.setId(result.getString("id"));
+                                itemFilme.setPoster_path(result.getString("poster_path"));
+                                itemFilme.setRelease_date(result.getString("release_date"));
+
+                                itemFilmesList.add(itemFilme);
                             }
 
                             adaptadorFilme = new AdaptadorFilme(getActivity(), itemFilmesList);

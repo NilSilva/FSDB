@@ -59,7 +59,7 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
 
     private AdaptadorFilmografia adaptadorFilmografia;
 
-    private ArrayList<ItemFilmografia> itemFilmografias;
+    private ArrayList<ItemFilme> itemFilmografias;
 
     private Button button;
 
@@ -117,51 +117,44 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
 
                             JSONArray jsonArray = response.getJSONArray("cast");
 
-                            //ArrayList<ItemFilmografia> list = new ArrayList<>();
-
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
 
-                                ItemFilmografia filmografia = new ItemFilmografia();
+                                ItemFilme filmografia = new ItemFilme();
 
-                                String media = object.getString("media_type");
-                                filmografia.setType(media);
+                                filmografia.setType(object.getString("media_type"));
                                 filmografia.setId(object.getString("id"));
-                                Log.d(TAG, "onResponse: media - " + media);
 
-                                if (media.equals("movie")) {
+                                if (filmografia.getType().equals("movie")) {
 
                                     try {
-                                        filmografia.setYear(object.getString("release_date").substring(0, 4));
+                                        filmografia.setRelease_date(object.getString("release_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        filmografia.setYear("n/a");
+                                        filmografia.setRelease_date("n/a");
                                     }
 
-                                    filmografia.setName(object.getString("title"));
+                                    filmografia.setTitle(object.getString("title"));
                                 } else {
 
                                     try {
-                                        filmografia.setYear(object.getString("first_air_date").substring(0, 4));
+                                        filmografia.setRelease_date(object.getString("first_air_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        filmografia.setYear("n/a");
+                                        filmografia.setRelease_date("n/a");
                                     }
 
-                                    filmografia.setName(object.getString("name"));
+                                    filmografia.setTitle(object.getString("name"));
                                 }
 
                                 try {
-                                    filmografia.setCharacter(object.getString("character"));
+                                    filmografia.setChar_job(object.getString("character"));
                                 } catch (JSONException e) {
-                                    filmografia.setCharacter("n/a");
+                                    filmografia.setChar_job("n/a");
                                 }
 
-                                filmografia.setJob("Actor");
-
-                                filmografia.setImagePath(object.getString("poster_path"));
+                                filmografia.setPoster_path(object.getString("poster_path"));
 
                                 Log.d(TAG, "onResponse: " + filmografia.toString());
 
-                                //list.add(filmografia);
                                 itemFilmografias.add(filmografia);
                             }
 
@@ -170,50 +163,43 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
 
-                                ItemFilmografia filmografia = new ItemFilmografia();
+                                ItemFilme filmografia = new ItemFilme();
 
                                 String media = object.getString("media_type");
-                                filmografia.setType(media);
-                                filmografia.setId(object.getString("id"));
-                                Log.d(TAG, "onResponse: media - " + media);
 
-                                if (media.equals("movie")) {
+                                filmografia.setType(object.getString("media_type"));
+                                filmografia.setId(object.getString("id"));
+
+                                if (filmografia.getType().equals("movie")) {
 
                                     try {
-                                        filmografia.setYear(object.getString("release_date").substring(0, 4));
+                                        filmografia.setRelease_date(object.getString("release_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        filmografia.setYear("n/a");
+                                        filmografia.setRelease_date("n/a");
                                     }
 
-                                    filmografia.setName(object.getString("title"));
+                                    filmografia.setTitle(object.getString("title"));
                                 } else {
 
                                     try {
-                                        filmografia.setYear(object.getString("first_air_date").substring(0, 4));
+                                        filmografia.setRelease_date(object.getString("first_air_date").substring(0, 4));
                                     } catch (Exception e) {
-                                        filmografia.setYear("n/a");
+                                        filmografia.setRelease_date("n/a");
                                     }
 
-                                    filmografia.setName(object.getString("name"));
+                                    filmografia.setTitle(object.getString("name"));
                                 }
 
-                                //filmografia.setCharacter(object.getString("character"));
+                                filmografia.setChar_job(object.getString("job"));
 
-                                filmografia.setJob(object.getString("job"));
-                                filmografia.setCharacter("n/a");
-
-                                filmografia.setImagePath(object.getString("poster_path"));
-
-                                Log.d(TAG, "onResponse: " + filmografia.toString());
-
-                                //list.add(filmografia);
+                                filmografia.setPoster_path(object.getString("poster_path"));
                                 itemFilmografias.add(filmografia);
                             }
 
-                            Collections.sort(itemFilmografias, new Comparator<ItemFilmografia>() {
+                            Collections.sort(itemFilmografias, new Comparator<ItemFilme>() {
                                 @Override
-                                public int compare(ItemFilmografia filmografia1, ItemFilmografia filmografia2) {
-                                    return filmografia2.getYear().compareTo(filmografia1.getYear());
+                                public int compare(ItemFilme filmografia1, ItemFilme filmografia2) {
+                                    return filmografia2.getRelease_date().compareTo(filmografia1.getRelease_date());
                                 }
                             });
 

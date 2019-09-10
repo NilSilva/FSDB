@@ -30,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import static android.widget.ImageView.ScaleType.FIT_XY;
 
@@ -55,8 +54,8 @@ public class DetalhesTVActivity extends AppCompatActivity implements AdaptadorPe
     private CarouselView carouselView;
 
     private ArrayList<String> backdrops = new ArrayList<>();
-    private ArrayList<ItemFilmePessoas> listPessoas = new ArrayList<>();
-    private ArrayList<ItemFilmePessoas> listEquipa = new ArrayList<>();
+    private ArrayList<ItemPessoas> listPessoas = new ArrayList<>();
+    private ArrayList<ItemPessoas> listEquipa = new ArrayList<>();
 
     private RecyclerView recyclerViewAtores;
     private RecyclerView recyclerViewEquipa;
@@ -129,12 +128,15 @@ public class DetalhesTVActivity extends AppCompatActivity implements AdaptadorPe
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String nome = result.getString("name");
-                                String personagem = result.getString("character");
-                                String image = result.getString("profile_path");
-                                String ID = result.getString("id");
-                                listPessoas.add(new ItemFilmePessoas(nome, personagem, image, ID));
-                                Log.d(TAG, "onResponse: cast - " + nome);
+                                ItemPessoas itemPessoa = new ItemPessoas();
+
+                                itemPessoa.setName(result.getString("name"));
+                                itemPessoa.setCharacter(result.getString("character"));
+                                itemPessoa.setProfile_path(result.getString("profile_path"));
+                                itemPessoa.setId(result.getString("id"));
+
+                                listPessoas.add(itemPessoa);
+                                Log.d(TAG, "onResponse: cast - " + itemPessoa.getName());
                             }
 
                             jsonArray = response.getJSONArray("crew");
@@ -142,12 +144,15 @@ public class DetalhesTVActivity extends AppCompatActivity implements AdaptadorPe
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String nome = result.getString("name");
-                                String job = result.getString("job");
-                                String image = result.getString("profile_path");
-                                String ID = result.getString("id");
-                                listEquipa.add(new ItemFilmePessoas(nome, job, image, ID));
-                                Log.d(TAG, "onResponse: crew - " + nome);
+                                ItemPessoas itemPessoa = new ItemPessoas();
+
+                                itemPessoa.setName(result.getString("name"));
+                                itemPessoa.setCharacter(result.getString("job"));
+                                itemPessoa.setProfile_path(result.getString("profile_path"));
+                                itemPessoa.setId(result.getString("id"));
+
+                                listEquipa.add(itemPessoa);
+                                Log.d(TAG, "onResponse: crew - " + itemPessoa.getName());
                             }
 
                             adaptadorPessoas = new AdaptadorPessoas(DetalhesTVActivity.this, listPessoas);
@@ -220,22 +225,9 @@ public class DetalhesTVActivity extends AppCompatActivity implements AdaptadorPe
     private void PreencherCampos(ItemTV tv) {
         Log.d(TAG, "PreencherCampos: " + tv.toString());
 
-        /*Picasso.get().load(tv.getBackdrop_path()).into(imageViewBackdrop, new Callback() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-                imageViewBackdrop.setImageResource(R.mipmap.ic_no_image);
-            }
-        });*/
         Picasso.get().load(tv.getPoster_path()).into(imageViewPoster, new Callback() {
             @Override
-            public void onSuccess() {
-
-            }
+            public void onSuccess() {}
 
             @Override
             public void onError(Exception e) {

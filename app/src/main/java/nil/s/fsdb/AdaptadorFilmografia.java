@@ -23,7 +23,7 @@ public class AdaptadorFilmografia extends RecyclerView.Adapter<AdaptadorFilmogra
 
     private Context context;
 
-    private ArrayList<ItemFilmografia> itemList;
+    private ArrayList<ItemFilme> itemList;
 
     private AdaptadorFilmografia.OnItemClickListenerP mListener;
 
@@ -37,7 +37,7 @@ public class AdaptadorFilmografia extends RecyclerView.Adapter<AdaptadorFilmogra
         mListener = listener;
     }
 
-    public AdaptadorFilmografia(Context context, ArrayList<ItemFilmografia> itemList) {
+    public AdaptadorFilmografia(Context context, ArrayList<ItemFilme> itemList) {
 
         this.context = context;
         this.itemList = itemList;
@@ -93,24 +93,17 @@ public class AdaptadorFilmografia extends RecyclerView.Adapter<AdaptadorFilmogra
     @Override
     public void onBindViewHolder(@NonNull final FilmografiaViewHolder holder, int position) {
 
-        ItemFilmografia currentItem = itemList.get(position);
+        ItemFilme currentItem = itemList.get(position);
 
-        String imageUrl = currentItem.getImagePath();
-        String nome = currentItem.getName();
-        String personagem = "";
-        personagem = currentItem.getCharacter();
-        String ano = currentItem.getYear();
-        String job = currentItem.getJob();
+        String imageUrl = currentItem.getPoster_path();
+        String nome = currentItem.getTitle();
+        String char_job = currentItem.getChar_job();
+        String ano = currentItem.getRelease_date();
         String media = currentItem.getType();
 
         holder.textViewMedia.setText(media);
-
         holder.textViewNome.setText(nome);
-        if (!personagem.equals("n/a")) {
-            holder.textViewPersonagemJob.setText(personagem);
-        }else {
-            holder.textViewPersonagemJob.setText(job);
-        }
+        holder.textViewPersonagemJob.setText(char_job);
         holder.textViewAno.setText(ano);
         Picasso.get().load(imageUrl).placeholder(R.drawable.progress_animation).into(holder.imageView, new Callback() {
             @Override
@@ -134,7 +127,7 @@ public class AdaptadorFilmografia extends RecyclerView.Adapter<AdaptadorFilmogra
     }
 
     public String getNome(int position) {
-        return itemList.get(position).getName();
+        return itemList.get(position).getTitle();
     }
 
     /**

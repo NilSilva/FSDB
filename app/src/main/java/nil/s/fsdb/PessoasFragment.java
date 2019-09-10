@@ -43,7 +43,7 @@ public class PessoasFragment extends Fragment implements AdaptadorProcurarPessoa
 
     private AdaptadorProcurarPessoas adaptadorPessoas;
 
-    private ArrayList<ItemFilmePessoas> itemPessoasList;
+    private ArrayList<ItemPessoas> itemPessoasList;
 
     private RequestQueue requestQueue;
 
@@ -157,10 +157,12 @@ public class PessoasFragment extends Fragment implements AdaptadorProcurarPessoa
                             for(int i = 0;i < jsonArray.length();i++){
                                 JSONObject result = jsonArray.getJSONObject(i);
 
-                                String id = result.getString("id");
-                                String nome = result.getString("name");
-                                String image = result.getString("profile_path");
-                                itemPessoasList.add(new ItemFilmePessoas(id, nome, image));
+                                ItemPessoas itemPessoa = new ItemPessoas();
+
+                                itemPessoa.setName(result.getString("name"));
+                                itemPessoa.setId(result.getString("id"));
+                                itemPessoa.setProfile_path(result.getString("profile_path"));
+                                itemPessoasList.add(itemPessoa);
                             }
 
                             adaptadorPessoas = new AdaptadorProcurarPessoas(getActivity(), itemPessoasList);
@@ -189,7 +191,7 @@ public class PessoasFragment extends Fragment implements AdaptadorProcurarPessoa
     public void onItemClick(int position) {
 
         Intent intent = new Intent(getActivity(), DetalhesPessoasActivity.class);
-        ItemFilmePessoas clickedItem = itemPessoasList.get(position);
+        ItemPessoas clickedItem = itemPessoasList.get(position);
 
         intent.putExtra("id", clickedItem.getId());
 

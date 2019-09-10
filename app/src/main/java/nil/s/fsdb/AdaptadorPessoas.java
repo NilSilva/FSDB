@@ -1,7 +1,6 @@
 package nil.s.fsdb;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
 
     private Context context;
 
-    private ArrayList<ItemFilmePessoas> itemList;
+    private ArrayList<ItemPessoas> itemList;
 
     private AdaptadorPessoas.OnItemClickListenerP mListener;
 
@@ -47,7 +46,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
         mListener = listener;
     }
 
-    public AdaptadorPessoas(Context context, ArrayList<ItemFilmePessoas> itemList) {
+    public AdaptadorPessoas(Context context, ArrayList<ItemPessoas> itemList) {
 
         this.context = context;
         this.itemList = itemList;
@@ -115,7 +114,7 @@ public class AdaptadorPessoas extends RecyclerView.Adapter<AdaptadorPessoas.Pess
     @Override
     public void onBindViewHolder(@NonNull final AdaptadorPessoas.PessoaViewHolder holder, int position) {
 
-        ItemFilmePessoas currentItem = itemList.get(position);
+        ItemPessoas currentItem = itemList.get(position);
 
         String imageUrl = currentItem.getProfile_path();
         String nome = currentItem.getName();
