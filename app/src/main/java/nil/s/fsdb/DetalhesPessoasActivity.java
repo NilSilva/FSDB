@@ -3,7 +3,15 @@ package nil.s.fsdb;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,13 +55,13 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
     private TextView textViewKnownForDepartment;
     private TextView textViewGender;
 
-    private Context context = this;
-
     private RecyclerView recyclerView;
 
     private AdaptadorFilmografia adaptadorFilmografia;
 
     private ArrayList<ItemFilmografia> itemFilmografias;
+
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +77,8 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
         textViewGender = findViewById(R.id.textViewDetalhesPessoasSexo);
 
         recyclerView = findViewById(R.id.recyclerViewDetalhesPessoasFilmografia);
+
+        button = findViewById(R.id.butt);
 
         Intent intent = getIntent();
 
@@ -292,6 +302,20 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
                                 textViewGender.setText("male");
                             }
 
+                            textViewBio.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    int lineCnt = textViewBio.getLineCount();
+
+                                    Log.d(TAG, "onResponse: lines - " + lineCnt);
+
+                                    if(lineCnt <= 4){
+                                        button.setVisibility(View.GONE);
+                                    }else {
+                                        textViewBio.setMaxLines(5);
+                                    }
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -338,6 +362,16 @@ public class DetalhesPessoasActivity extends AppCompatActivity implements Adapta
             Toast.makeText(this, "ID - " + id, Toast.LENGTH_LONG).show();
 
             startActivity(intent);
+        }
+    }
+
+    public void Mostrar(View view) {
+        if (button.getText().toString().equals("Mostrar mais")) {
+            textViewBio.setMaxLines(10000);
+            button.setText("Mostrar menos");
+        } else {
+            textViewBio.setMaxLines(5);
+            button.setText("Mostrar mais");
         }
     }
 }

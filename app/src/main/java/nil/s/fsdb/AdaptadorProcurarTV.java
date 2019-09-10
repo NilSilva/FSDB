@@ -9,7 +9,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Callback;
@@ -17,9 +16,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdaptadorTV extends RecyclerView.Adapter<AdaptadorTV.TvViewHolder>{
+public class AdaptadorProcurarTV extends RecyclerView.Adapter<AdaptadorProcurarTV.TvViewHolder>{
 
-    private String TAG = "AdaptadorTV";
+    private String TAG = "AdaptadorProcurarTV";
 
     private Context context;
 
@@ -27,7 +26,7 @@ public class AdaptadorTV extends RecyclerView.Adapter<AdaptadorTV.TvViewHolder>{
 
     private OnItemClickListener listener;
 
-    public AdaptadorTV(Context context, ArrayList<ItemTV> list){
+    public AdaptadorProcurarTV(Context context, ArrayList<ItemTV> list){
         this.context = context;
         this.list = list;
     }
@@ -115,7 +114,7 @@ public class AdaptadorTV extends RecyclerView.Adapter<AdaptadorTV.TvViewHolder>{
         void onItemClick(int position);
     }
 
-    public void setOnItemClickListener(AdaptadorTV.OnItemClickListener listener) {
+    public void setOnItemClickListener(AdaptadorProcurarTV.OnItemClickListener listener) {
         this.listener = listener;
     }
 

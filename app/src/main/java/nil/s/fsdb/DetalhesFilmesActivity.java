@@ -1,10 +1,14 @@
 package nil.s.fsdb;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +50,7 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
     private TextView textViewData;
     private TextView textViewRevenue;
     private TextView textViewRuntime;
+    private TextView textView;
     
     private RequestQueue requestQueue;
 
@@ -63,6 +68,10 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
     private ArrayList<ItemFilmePessoas> itemPessoasList;
     private ArrayList<ItemFilmePessoas> itemEquipaList;
+
+    private double rating;
+
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +91,14 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewData = findViewById(R.id.textViewDetalhesFilmesData);
         textViewRevenue = findViewById(R.id.textViewDetalhesFilmesRevenue);
         textViewRuntime = findViewById(R.id.textViewDetalhesFilmesRuntime);
+        textView = findViewById(R.id.textViewDetalhesFilmesVoteAverage);
 
         recyclerViewPessoas = findViewById(R.id.recyclerViewDetalhesFilmeAtores);
         recyclerViewEquipa = findViewById(R.id.recyclerViewDetalhesFilmeEquipa);
 
         youTubeView = findViewById(R.id.videoViewDetalhesFilmeTrailer);
+
+        progressBar = findViewById(R.id.progress_circularFilmeClass);
 
         parseJSON();
 
@@ -239,6 +251,9 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
 
                             Log.d(TAG, "video key - " + key);
 
+                            rating = response.getDouble("vote_average");
+                            Log.d(TAG, "onResponse: 1" + response.getString("vote_average"));
+
                             String bud = response.getString("budget");
                             int budget;
                             String rev = response.getString("revenue");
@@ -349,6 +364,13 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         textViewRevenue.setText(boxOffice);
         textViewRuntime.setText(String.valueOf(filme.getRuntime()));
 
+        Log.d(TAG, "onResponse: rating - " + rating);
+
+        progressBar.setProgress((int)(rating * 10));
+        textView.setText(progressBar.getProgress() + "");
+
+        Log.d(TAG, "onResponse: progress - " + progressBar.getProgress());
+
         youTubeView.initialize(ChaveAPI.youtube, this);
     }
 
@@ -368,5 +390,12 @@ public class DetalhesFilmesActivity extends YouTubeBaseActivity implements YouTu
         CardView cardView = findViewById(R.id.cardViewDetalhesFilmeTrailer);
         cardView.setVisibility(View.GONE);
         Log.d("Youtube -->", "Failure");
+    }
+
+    public void copy(View view) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(textViewNome.getText().toString(), textViewNome.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(this, "copiado!!!!!!", Toast.LENGTH_LONG).show();
     }
 }

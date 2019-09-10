@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,13 +29,13 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class TVFragment extends Fragment implements AdaptadorTV.OnItemClickListener {
+public class TVFragment extends Fragment implements AdaptadorProcurarTV.OnItemClickListener {
 
     private String TAG = "TVFragment";
 
     private RecyclerView recyclerView;
 
-    private AdaptadorTV adaptadorTV;
+    private AdaptadorProcurarTV adaptadorProcurarTV;
 
     private ArrayList<ItemTV> list = new ArrayList<>();
 
@@ -127,9 +126,9 @@ public class TVFragment extends Fragment implements AdaptadorTV.OnItemClickListe
                                 Log.d(TAG, "onResponse: TV - " + list.get(i).toString());
                             }
 
-                            adaptadorTV = new AdaptadorTV(getActivity(), list);
-                            recyclerView.setAdapter(adaptadorTV);
-                            adaptadorTV.setOnItemClickListener(TVFragment.this);
+                            adaptadorProcurarTV = new AdaptadorProcurarTV(getActivity(), list);
+                            recyclerView.setAdapter(adaptadorProcurarTV);
+                            adaptadorProcurarTV.setOnItemClickListener(TVFragment.this);
 
                             Log.d(TAG, "onResponse: tv - " + editText.getHint());
                         }catch (JSONException e){

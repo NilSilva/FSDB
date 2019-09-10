@@ -5,12 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
-    android:paddingBottom="10dp"
     tools:context=".DetalhesFilmesActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <!--com.synnapps.carouselview.CarouselView
+            android:id="@+id/carouselViewDetalhesFilmesBackground"
+            android:layout_width="match_parent"
+            android:layout_height="205dp"
+            app:indicatorVisibility="gone"
+            app:slideInterval="5000" /-->
 
         <ImageView
             android:id="@+id/imageViewDetalhesFilmesBackground"
@@ -18,39 +24,69 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:background="@android:color/white"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageViewDetalhesFilmesPoster"
-            android:layout_width="100dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="130dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@android:color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/imageViewDetalhesFilmesBackground" />
+            android:maxHeight="205dp" />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewDetalhesFilmesPoster"
+            android:layout_width="110dp"
+            android:layout_height="160dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="130dp"
+            app:cardBackgroundColor="@color/backgroundColor">
+
+            <RelativeLayout
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom"
+                android:background="@color/cardViewBackgroundColor"
+                android:elevation="10dp"
+                tools:targetApi="lollipop">
+
+                <ProgressBar
+                    android:id="@+id/progress_circularFilmeClass"
+                    style="?android:progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:progress="50"
+                    android:progressDrawable="@drawable/progress_bar" />
+
+                <TextView
+                    android:id="@+id/textViewDetalhesFilmesVoteAverage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    tools:text="50" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/imageViewDetalhesFilmesPoster"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewDetalhesFilmesNome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="10dp"
-            app:cardBackgroundColor="#062947"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@id/imageViewDetalhesFilmesBackground"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewDetalhesFilmesPoster"
-            app:layout_constraintHorizontal_bias=".01"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_below="@+id/cardViewDetalhesFilmesPoster"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/cardViewBackgroundColor"
+            app:cardCornerRadius="10dp">
 
             <TextView
                 android:id="@+id/textViewDetalhesFilmesNome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:onClick="copy"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 tools:text="Teste" />
@@ -58,19 +94,14 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardViewDetalhesFilmeInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_below="@id/cardViewDetalhesFilmesNome"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
             app:cardBackgroundColor="@color/cardViewBackgroundColor"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageViewDetalhesFilmesPoster"
-            app:layout_constraintHorizontal_bias="0.01"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageViewDetalhesFilmesBackground">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -110,6 +141,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -145,13 +177,11 @@
             android:id="@+id/cardViewDetalhesFilmeOverview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/cardViewDetalhesFilmeInfo"
             android:layout_margin="10dp"
             android:padding="10dp"
             app:cardBackgroundColor="@color/cardViewBackgroundColor"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageViewDetalhesFilmesPoster">
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -181,53 +211,107 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewDetalhesFilmeTrailer"
             android:layout_width="match_parent"
-            android:layout_margin="8dp"
-            app:cardCornerRadius="10dp"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/cardViewDetalhesFilmeOverview"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="@color/cardViewBackgroundColor"
-            app:layout_constraintTop_toBottomOf="@+id/cardViewDetalhesFilmeOverview">
+            app:cardCornerRadius="10dp">
 
-            <com.google.android.youtube.player.YouTubePlayerView
-                android:id="@+id/videoViewDetalhesFilmeTrailer"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/textViewTrailer"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.youtube.player.YouTubePlayerView
+                    android:id="@+id/videoViewDetalhesFilmeTrailer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp" />
+
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardViewDetalhesFilmePessoas"
-            android:layout_margin="8dp"
-            android:padding="8dp"
-            app:cardCornerRadius="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/cardViewDetalhesFilmeTrailer"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="@color/cardViewBackgroundColor"
-            app:layout_constraintTop_toBottomOf="@+id/cardViewDetalhesFilmeTrailer">
+            app:cardCornerRadius="10dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewDetalhesFilmeAtores"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/textViewCast"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@android:color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewDetalhesFilmeAtores"
+                    android:layout_width="match_parent"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:layout_margin="8dp"
-            android:padding="8dp"
-            app:cardCornerRadius="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/cardViewDetalhesFilmePessoas"
+            android:layout_margin="8dp"
             app:cardBackgroundColor="@color/cardViewBackgroundColor"
-            app:layout_constraintTop_toBottomOf="@+id/cardViewDetalhesFilmePessoas">
+            app:cardCornerRadius="10dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewDetalhesFilmeEquipa"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/textViewCrew"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@android:color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewDetalhesFilmeEquipa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp" />
+
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </ScrollView>
